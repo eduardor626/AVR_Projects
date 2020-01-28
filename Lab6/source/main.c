@@ -66,7 +66,6 @@ void TimerSet(unsigned long M){
 }
 
 
-}
 
 int main() {
     /* Insert DDR and PORT initializations */
@@ -82,5 +81,6 @@ int main() {
 	while(!TimerFlag);//wait 1 sec
 	TimerFlag = 0;
     }
-  
+	//Note: For the above a better style would use a synchSM with TickSM()
+	//This example just illustrates the use of the ISR and flag  
 }
