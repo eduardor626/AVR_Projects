@@ -2,7 +2,12 @@
  *  Partner(s) Name: Arturo Alvarado
  *	Lab Section:
  *	Assignment: Lab #6  Exercise # 2
- *	Exercise Description: Create a simple light game that requires pressing a button on PA0 while the middle of three LEDs on PB0, PB1, and PB2 is lit.The LEDs light for 300 ms each in sequence. When the button is pressed, the currently lit LED stays lit. Pressing the button again restarts the game. 
+ *	Exercise Description: 
+
+ Create a simple light game that requires pressing a button on PA0 while 
+ the middle of three LEDs on PB0, PB1, and PB2 is lit.The LEDs light for 
+ 300 ms each in sequence. When the button is pressed, the currently lit 
+ LED stays lit. Pressing the button again restarts the game. 
 
  *
  *	I acknowledge all content contained herein, excluding template or example
@@ -20,97 +25,95 @@ volatile unsigned char TimerFlag = 0;
 unsigned long _avr_timer_M = 1;
 unsigned long _avr_timer_cntcurr = 0;
 
-enum STATES{INIT, L1, L2, L3, PRESSED, WAIT, BACK} STATE;
+
+
+enum STATES {START, CENTER, ONE, TWO, THREE} STATE;
+
 unsigned char temp = 0xFF;
-unsigned char buttonPressed = 0x00;
+unsigned char button = 0x00;
 
 void state_machine(){
 
 	switch(STATE)
 	{
-		case INIT:
-			STATE = L1;
+		//starting the initial state
+		case START:
+			temp = 0x00;
+			STATE  = CENTER;
 			break;
-		case L1:
-			if(buttonPressed == 0x01){
-				STATE = PRESSED;
+			// Possible values are x00, 0x01, 0x02, 0x03
+
+		case CENTER:
+			if(button == 0x00){
+				STATE = CENTER;
+
+			}else if(button == 0x01){
+				if(temp < 0x09){
+					temp++;				
+				}
+				STATE = ONE;
+			}
+			else if(button == 0x02){
+				if(temp > 0x00){
+					temp--;
+				}
+				STATE = TWO;
+			}
+			else if(button == 0x03){
+				temp = 0x00;
+				STATE = THREE;
+			}else {
+
+				STATE = CENTER;
+
+			}
+
+			break;
+			// if PINA == 0x01
+		case ONE:
+			if(button == 0x01){
+				STATE = ONE;
+
+			}
+			else if(button == 0x03){
+				temp = 0x00;
+				STATE = THREE;
+			}else if(button == 0x00){
+				STATE = CENTER;
 			}else{
-				STATE = L2;
+				STATE = ONE;
 			}
 			break;
-		case L2:
-			if(buttonPressed == 0x01){
-				STATE = PRESSED;
-			}else{
-				STATE = L3;
+		case TWO:
+			if(button == 0x02){
+				STATE = TWO;
+			}else if(button == 0x03){
+				temp = 0x00;
+				STATE = THREE;
 			}
-			break;
-		case L3:
-			if(buttonPressed == 0x01){
-				STATE = PRESSED;
+			else if(button == 0x00){
+				STATE = CENTER;
 			}else{
-				STATE = BACK;
+				STATE = TWO;
 			}
 			break;
 
-		case PRESSED:
-			if(buttonPressed == 0x01){
-				STATE = PRESSED;
-			}
-			else if(buttonPressed == 0x00){
-				STATE = WAIT;
-			}
-			else{
-				STATE = PRESSED;
+		case THREE:
+			if(button == 0x03){
+				STATE = THREE;
+			}else if(button == 0x00){
+				STATE = CENTER;
+			}else {
+				STATE = THREE;
 			}
 			break;
-		case WAIT:
-			if(buttonPressed == 0x00){
-				STATE = WAIT;
-			}else if(buttonPressed == 0x01){
-				STATE = L1;
-			}else{
-				STATE = WAIT;
-			}
+		default:
 			break;
-		case BACK:
-			if(buttonPressed == 0x01){
-				STATE = PRESSED;
-			}else{
-				STATE = L1;
-			}
-			break;
-		default:break;
-	
 	}
 
-	switch(STATE)
-	{
-		case INIT:
-			break;
-		case L1:
-			temp = 0x01;
-			break;
-		case L2:
-			temp = 0x02;
-			break;
-		case L3:
-			temp = 0x04;
-			break;
-		case PRESSED:
-			temp = temp;
-			break;
-		case WAIT:
-			temp = temp;
-			break;
-		case BACK:
-			temp = 0x02;	
-		default:break;
-
-	}
 	PORTC = temp;
-
 }
+
 
 
 void TimerOn(){
@@ -162,23 +165,13 @@ void TimerSet(unsigned long M){
 
 
 int main() {
-    /* Insert DDR and PORT initializations */
-	DDRC = 0xFF;//set port C to output
-	PORTC = 0x00; //INIT port C to 0s
-	
-	//initializing the button press port
-	DDRA = 0x00; //set port A to input
-	PORTA = 0xFF; //INIT port A to be 1s
+	DDRA = 0X00; PORTA = 0xFF;
+	DDRC = 0xFF; PORTC = 0x00;
+	STATE = START;
+	while(1) {
+		button = ~PINA & 0x03;
+		state_machine();
+	}
 
-	TimerSet(300);
-	TimerOn();
-    while (1) {
-
-	buttonPressed = ~PINA;
-	state_machine();
-	while(!TimerFlag);//wait 1 sec
-	TimerFlag = 0;
-    }
-	//Note: For the above a better style would use a synchSM with TickSM()
-	//This example just illustrates the use of the ISR and flag  
+	return 0;
 }
