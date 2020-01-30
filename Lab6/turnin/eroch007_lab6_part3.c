@@ -1,13 +1,18 @@
 /*	Author: Eduardo Rocha
- *  Partner(s) Name: Arturo Alvarado
+ *  	Partner(s) Name: Arturo Alvarado
  *	Lab Section:
- *	Assignment: Lab #6  Exercise # 2
+ *	Assignment: Lab #6  Exercise #3
  *	Exercise Description: 
 
- Create a simple light game that requires pressing a button on PA0 while 
- the middle of three LEDs on PB0, PB1, and PB2 is lit.The LEDs light for 
- 300 ms each in sequence. When the button is pressed, the currently lit 
- LED stays lit. Pressing the button again restarts the game. 
+	Buttons are connected to PA0 and PA1. Output for PORTB is initially 7. 
+	Pressing PA0 increments PORTB once (stopping at 9). 
+	Pressing PA1 decrements PORTB once (stopping at 0). 
+	If both buttons are depressed (even if not initially simultaneously), 
+	PORTB resets to 0.
+ 
+	Now that we have timing, only check to see if a button has been pressed
+	every 100 ms. Additionally, if a button is held, then the count should
+	continue to increment (or decrement) at a rate of once per second. 
 
  *
  *	I acknowledge all content contained herein, excluding template or example
