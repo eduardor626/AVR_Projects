@@ -4,15 +4,15 @@
  *	Assignment: Lab #6  Exercise #3
  *	Exercise Description: 
 
-	Buttons are connected to PA0 and PA1. Output for PORTB is initially 7. 
-	Pressing PA0 increments PORTB once (stopping at 9). 
-	Pressing PA1 decrements PORTB once (stopping at 0). 
-	If both buttons are depressed (even if not initially simultaneously), 
-	PORTB resets to 0.
- 
-	Now that we have timing, only check to see if a button has been pressed
-	every 100 ms. Additionally, if a button is held, then the count should
-	continue to increment (or decrement) at a rate of once per second. 
+ Buttons are connected to PA0 and PA1. Output for PORTB is initially 7. 
+ Pressing PA0 increments PORTB once (stopping at 9). 
+ Pressing PA1 decrements PORTB once (stopping at 0). 
+ If both buttons are depressed (even if not initially simultaneously), 
+ PORTB resets to 0.
+
+ Now that we have timing, only check to see if a button has been pressed
+ every 100 ms. Additionally, if a button is held, then the count should
+ continue to increment (or decrement) at a rate of once per second. 
 
  *
  *	I acknowledge all content contained herein, excluding template or example
@@ -37,6 +37,7 @@ enum STATES {START, RELEASE_STATE, PRESS_PINA0, PRESS_PINA1, RESET} STATE;
 unsigned char temp = 0xFF;
 unsigned char currentState = 0x00;
 unsigned char tempState = 0x00;
+unsigned char counter =0x00;
 
 void state_machine(){
 
@@ -50,14 +51,21 @@ void state_machine(){
 			STATE  = RELEASE_STATE;
 			break;
 		case RELEASE_STATE:
+			counter = 0x00;
 			if(tempA == 0x00){
 				STATE = RELEASE_STATE;
 
 			}else if(tempA == 0x01){
 				STATE = PRESS_PINA0;
+				if(PORTC<9){
+					++PORTC;
+				}
 			}
 			else if(tempA == 0x02){
 				STATE = PRESS_PINA1;
+				if(PORTC >0){
+					--PORTC;
+				}
 			}
 			else if(tempA == 0x03){
 				PORTC = 0;
@@ -66,13 +74,15 @@ void state_machine(){
 				STATE = RELEASE_STATE;
 			}
 			break;
-			
+
 		case PRESS_PINA0:
-			if(PORTC < 9){
-				++PORTC;
-			}
 			if(tempA == 0x01){
 				STATE = PRESS_PINA0;
+				counter++;
+				if(counter > 10){
+					counter = 0;
+					++PORTC;
+				}
 			}
 			else if(tempA == 0x00){
 				STATE = RELEASE_STATE;
@@ -84,11 +94,13 @@ void state_machine(){
 			}
 			break;
 		case PRESS_PINA1:
-			if(PORTC != 0){
-				--PORTC;
-			}
 			if(tempA == 0x02){
 				STATE = PRESS_PINA1;
+				counter++;
+				if(counter > 10){
+					counter = 0;
+					--PORTC;
+				}
 			}
 			else if(tempA == 0x00){
 				STATE = RELEASE_STATE;
@@ -169,7 +181,7 @@ int main() {
 	DDRA = 0X00; PORTA = 0xFF;
 	DDRC = 0xFF; PORTC = 0x00;
 
-	TimerSet(300);
+	TimerSet(100);
 	TimerOn();
 
 	STATE = START;
