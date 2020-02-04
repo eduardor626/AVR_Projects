@@ -77,13 +77,13 @@ program: $(PATHB)main.hex
 	$(PROGRAM) -c $(PROGRAMMER) -p $(MMCU) $(VERBOSITY) -U $(MEMORY):w:$<
 
 debug: $(PATHO)main.elf
-	@sed -i "s/break main.c:.*/break main.c:$(WHILELINENO)/" $(INITDEBUGGER)
+	@sed -i".bak" "s/break main.c:.*/break main.c:$(WHILELINENO)/" $(INITDEBUGGER)
 	$(SIMAVR) -g -mmcu=$(MMCU) -f $(FREQ) $< &
 	$(GDB) $(DEBUGGING)
 	@pkill simavr
 
 test: $(PATHO)main.elf
-	@sed -i "s/break main.c:.*/break main.c:$(WHILELINENO)/" $(INITDEBUGGER)
+	@sed -i".bak" "s/break main.c:.*/break main.c:$(WHILELINENO)/" $(INITDEBUGGER)
 	$(SIMAVR) -g -mmcu=$(MMCU) -f $(FREQ) $< &
 	$(GDB) $(TESTING)
 	@pkill simavr
