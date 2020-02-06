@@ -41,7 +41,7 @@ int main() {
 	ADC_init();
 	
 	unsigned short my_short;
-	unsigned short MAX = 150;
+	unsigned short MAX = 160;
 
 	/* Insert your solution below */
 	while (1) {
