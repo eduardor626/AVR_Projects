@@ -1,36 +1,54 @@
 /*	Author: Eduardo Rocha
  *  Partner(s) Name: Arturo Alvarado
- *	Lab Section:
- *	Assignment: Lab #9  Exercise #2
+ *	Lab Section: 
+ *	Assignment: Lab #9  Exercise #3
  *	Exercise Description: 
-	
-	Using the ATmega1284’s PWM functionality, design a system where the notes: 
-	C4, D, E, F, G, A, B, and C5,  from the table at the top of the lab, can be 
-	generated on the speaker by scaling up or down the eight note scale. 
-
-	Three buttons are used to control the system. One button toggles sound on/off. 
-	The other two buttons scale up, or down, the eight note scale. Criteria:
-	The system should scale up/down one note per button press.
-	When scaling down, the system should not scale below a C.
-	When scaling up, the system should not scale above a C.
-	
-	Hints:
-	Breaking the system into multiple synchSMs could make this part easier.
 
 
 
-
- *
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.
  */
 
-
-
 #include <avr/io.h>
-#ifdef _SIMULATE_
-#include "simAVRHeader.h"
-#endif
+#include <avr/interrupt.h>
+
+volatile unsigned char TimerFlag=0;
+
+unsigned long _avr_timer_M = 1;
+unsigned long _avr_timer_cntcurr=0;
+
+void TimerOn(){
+	TCCR1B=0x0B;
+	OCR1A=125;
+	TIMSK1=0x02;
+	TCNT1=0;
+	_avr_timer_cntcurr=_avr_timer_M;
+	SREG |= 0x80;
+}
+
+void TimerOff(){
+	TCCR1B=0x00;
+}
+
+void TimerISR(){
+	TimerFlag=1;
+}
+
+ISR(TIMER1_COMPA_vect){
+	_avr_timer_cntcurr --;
+	
+	if( _avr_timer_cntcurr==0){
+		TimerISR();
+		_avr_timer_cntcurr= _avr_timer_M;
+	}
+}
+
+void TimerSet(unsigned long M ){
+	_avr_timer_M=M;
+	_avr_timer_cntcurr = _avr_timer_M;
+}
+
 
 
 void set_PWM(double frequency){
@@ -51,110 +69,118 @@ void set_PWM(double frequency){
 	}
 
 }
+		
+			
 
 
-//Enables the ATmega1284’s PWM functionality. 
 void PWM_on(){
-	TCCR3A = (1 << COM3A0);
-	TCCR3B = (1 << WGM32) | (1 << CS31) | (1 << CS30);
+	
+	TCCR3A = ( 1 << COM3A0 );
+	
+	TCCR3B = ( 1 << WGM32 ) | ( 1 << CS31 ) | ( 1 << CS30 );
+	
 	set_PWM(0);
-
 }
-//Disables the ATmega1284’s PWM functionality. 
+
 void PWM_off(){
-	TCCR3A = 0x00;
-	TCCR3B = 0x00;
-
+	TCCR3A=0x00;
+	TCCR3B=0x00;
 }
 
 
-enum STATES {INIT, SILENT, ON , UP, DOWN} STATE;
 
-unsigned char tempA;
-unsigned char i;
-double frequency[8] = {261.63,239.66,329.63,349.23,392.00,440.00,493.88,523.25};
+enum STATES { start, init, press, release, wait, play } state;
 
+unsigned char button_on=0;
+double sound_arr[5]={ 261.63, 329.63, 392.00, 493.88, 523.25 };
+unsigned char sound_lasting[5]={3, 1, 2, 1, 6 };
+unsigned char sound_waiting[5]={1, 2, 1, 2, 0 };
+unsigned char i=0;
+unsigned char cnt=0;
 
 void state_machine(){
+	
+	unsigned char button1=~PINA & 0x01;
+	unsigned char button2=~PINA & 0x02;
+	unsigned char button3=~PINA & 0x04;
+	
 
-	tempA = ~PINA & 0x07;
+	
+	
+	switch (state){
+		
+		case start:	
+							state = init;
+							break;
+					
+		case init:			
+							
+							state=(button1) ? press : init;
+							break;
+					
+		case press:		
+							state=(button1) ? press : release;
+							break;			
+					
+		case release:				state=wait;
+							break;
 
-	switch(STATE)
-	{
-		case INIT:
-			STATE = SILENT;
-			break;
-		case SILENT: 
-			i = 0;
-			set_PWM(0.00);
-			if(tempA == 0x00){
-				STATE = SILENT;
-			}else if(tempA == 0x01){
-				STATE = ON;
-			}else{
-				STATE = SILENT;
-			}
-			break;
-		case ON:
-			set_PWM(frequency[i]);
-			if(tempA == 0x01){
-				STATE = SILENT;
-			}else if(tempA == 0x02){
-				STATE = UP;
-			}else if(tempA == 0x04){
-				STATE = DOWN;
-			}
-			else{
-				STATE = ON;
-			}
-			break;
-		case  UP:
-			if(tempA == 0x00){
-				STATE = ON;
-				if(i < 7){
-					i++;
-				}
+		case wait:				if( cnt < sound_waiting[i] ){
+								cnt=cnt+1;
+							}else{
+							state=play;
+							cnt=0;
+							}
 
-			}else if(tempA == 0x01){
-				STATE = SILENT;
-			}
-			else{
-				STATE = UP;
-			}
-			break;
-		case DOWN:
-			if(tempA == 0x00){
-				STATE = ON;
-				if(i > 0){
-					i--;
-				}
-			}else if(tempA == 0x01){
-				STATE = SILENT;
-			}
-			else{
-				STATE = DOWN;
-			}
-			break;
-		default: break;
-	}
+							break;
+
+		case play:			
+							//play the sound in the current array
+							set_PWM( sound_arr[i] );
+
+							if( cnt < sound_lasting[i] ){
+								cnt=cnt+1;
+							}else{
+							state=release;
+							cnt=0;
+							++i;
+							}
+
+							if( i==5 ){
+							state=start;
+							i=0;
+							set_PWM( 0 ); //turn off sound
+							}
+
+							break;
+					
+		default: 
+							state=start;
+							break;
+		}
 
 }
 
+int main(void)
+{
 
-int main(void) {
-    /* Insert DDR and PORT initializations */
+	//Initializing our input and output ports
+	DDRA=0x00; PORTA=0xFF;
+	DDRB=0XFF; PORTB=0x00;
 
-	//INPUTS FROM THE BUTTONS 
-	DDRA = 0x00; PORTA = 0xFF; 
-
-	//OUPUT FOR THE SPEAKER
-	DDRB = 0xFF; PORTB = 0x00;
-  
+	//Initializing our Speaker
 	PWM_on();
-	STATE = INIT;
 
-    while (1) {
-    	state_machine();
+	//Initializing our time of 100ms
+	TimerSet(100);   
+	TimerOn(); //Enabling the timer
+	
+    while (1) 
+    {
+		state_machine();
+		while(!TimerFlag);
+		TimerFlag=0;
     }
-    return 1;
+
+    return 0;
 }
