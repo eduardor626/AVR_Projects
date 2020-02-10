@@ -4,6 +4,21 @@
  *	Assignment: Lab #9  Exercise #3
  *	Exercise Description: 
 
+	Challenge) Using the ATmega1284’s built in PWM functionality, design a system where a short, 
+	five-second melody, is played when a button is pressed. NOTE: The melody must be somewhat complex 
+	(scaling from C to B is NOT complex). 
+
+	Criteria:
+	When the button is pressed, the melody should play until completion
+	Pressing the button again in the middle of the melody should do nothing
+	If the button is pressed and held, when the melody finishes, it should not 
+	repeat until the button is released and pressed again
+
+
+	Hints:
+	One approach is to use three arrays. One array holds the sequence of notes for the melody. 
+	Another array holds the times that each note is held. The final array holds the down times between adjacent notes.
+
 
 
  *	I acknowledge all content contained herein, excluding template or example
