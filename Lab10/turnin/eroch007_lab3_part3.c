@@ -1,3 +1,19 @@
+/*	Author: Eduardo Rocha
+ *  Partner(s) Name: Arturo Alvarado
+ *	Lab Section:
+ *	Assignment: Lab #10  Exercise #3
+ *	Exercise Description: 
+
+	
+	
+
+	Modify the above example so the threeLEDs light for 300 ms, while blinkingLED’s LED still blinks 1 second on and 1 second off.
+ *	I acknowledge all content contained herein, excluding template or example
+ *	code, is my own original work.
+ */
+
+
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "../header/timer.h"
