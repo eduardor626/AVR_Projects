@@ -14,38 +14,23 @@
 #endif
 
 int main(void) {
-    //output of columns
+    //output of rows
     DDRC = 0xFF;
     PORTC = 0x00;
     
-    //set port A as output columns
+    //output of columns
     DDRA = 0xFF;
     PORTA = 0x00;
 
-//    unsigned short data;
-//    unsigned short i;
-    //set period timer
-    TimerSet(250);
-    //initialize timer
+
+    TimerSet(500);
     TimerOn();
-    //enable interupts
-//    sei();
-    //enable keyboard
-//    Keyboard_Init();
-    //gets the key code from the keyboard
+
     unsigned char row = 0;
     unsigned char column = 0;
+
     while (1)
     {
-//        buttons = GET_BUTTON;
-//        ToneSM();
-//        data = DATA;
-//        PORTB = data;
-//        if(char_waiting)
-//        {
-//            key_code = read_char();
-//            PORTA = key_code;
-//        }
         if(row < 7)
         {
             if(column < 7)
@@ -70,11 +55,10 @@ int main(void) {
                 column = 0;
             }
         }
-       PORTA = (0x00 | (1 << column));
-       PORTC = (0xFF & ~(1 << row));
-//        PORTA = 0xFF;
-//        PORTC = 0x00;
-        //PORTB = 0xFF;
+       //PORTA = (0x00 | (1 << column));
+       //PORTC = (0xFF & ~(1 << row));
+        PORTA = 0x10;
+        PORTC = 0x80;
         while(!TimerFlag);
         TimerFlag = 0;
     }
