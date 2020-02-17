@@ -14,23 +14,26 @@
 #endif
 
 int main(void) {
-    //output of rows
+
+    //Output for rows
     DDRC = 0xFF;
     PORTC = 0x00;
     
-    //output of columns
+    //Output for columns
     DDRA = 0xFF;
     PORTA = 0x00;
 
 
-    TimerSet(500);
+    TimerSet(250);
     TimerOn();
 
-    unsigned char row = 0;
-    unsigned char column = 0;
+    unsigned int column = 0;
+    unsigned int row = 0;
+
 
     while (1)
     {
+
         if(row < 7)
         {
             if(column < 7)
@@ -55,10 +58,8 @@ int main(void) {
                 column = 0;
             }
         }
-       //PORTA = (0x00 | (1 << column));
-       //PORTC = (0xFF & ~(1 << row));
-        PORTA = 0x10;
-        PORTC = 0x80;
+       PORTA = (0x00 | (1 << column)); //columns
+       PORTC = (0xFF & ~(1 << row)); //rows
         while(!TimerFlag);
         TimerFlag = 0;
     }
