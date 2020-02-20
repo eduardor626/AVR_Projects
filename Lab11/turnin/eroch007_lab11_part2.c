@@ -1,21 +1,24 @@
 /*	Author: Eduardo Rocha
  *  Partner(s) Name: Arturo Alvarado
  *	Lab Section:
- *	Assignment: Lab #11  Exercise #1
+ *	Assignment: Lab #11  Exercise #2
  *	Exercise Description: 
+
+	Use the LCD code, along with a button and/or time delay to display the message "CS120B is Legend... wait for it DARY!" 
+	The string will not fit on the display all at once, so you will need to come up with some way to paginate or scroll the text.
 	
-	Modify the keypad code to be in an SM task. 
-	Then, modify the keypad SM to utilize the simple task scheduler format. 
-	All code from here on out should use the task scheduler. 
+	Note: If your LCD is exceptionally dim, adjust the resistance provided by the potentiometer connected to Pin #3.
+
 
  *
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.
  */
 #include <avr/io.h>
-#include "keypad.h"
-#include "timer.h"
-#include "scheduler.h"
+#include "../header/keypad.h"
+#include "../header/timer.h"
+#include "../header/scheduler.h"
+#include "../header/io.h"
 
 enum keypad_STATES {start} keypad_state;
 	
@@ -53,23 +56,63 @@ int keypad_tick(int keypad_state){
 	return keypad_state;
 }
 
+char *name = "CS120B is Legend... wait for it DARY!";
+//there are 38 characters in the string
+unsigned char count = 0;
+unsigned char output[17]; //character array that will hold the output
+enum Lcd_States{START, PRINT} LCD_STATE;
+int LCD_tick(int LCD_STATE)
+{
+	switch(LCD_STATE)
+	{
+		case START:
+			LCD_STATE = PRINT;
+			break;
+		case PRINT:
+			LCD_STATE = PRINT;
+			for (int j = 0; j < 16; ++j)
+  			{
+    			output[j] = name[(count+j) % 38];
+  			}
+  			count = (count + 1);
+  			LCD_DisplayString(1, output);
+			break;
+	}
+	return LCD_STATE;
+
+
+}
+
+task task2;
+
 int main(void)
 {
 	DDRB = 0xFF; PORTB = 0x00;
-	DDRC = 0xF0; PORTC = 0x0F;
+	DDRC = 0xFF; PORTC = 0x00;
+	DDRD = 0xFF; PORTD = 0x00;
 	
-	static task task1;
-	task *tasks[] = {&task1};
+	task *tasks[] = {&task2};
 	const unsigned short numTasks = sizeof(tasks)/sizeof(task*);
+
 	
 	//Task 1
-	task1.state = start;
-	task1.period = 50;
-	task1.elapsedTime - task1.period;
-	task1.TickFct = &keypad_tick;
+	//task1.state = start;
+	//task1.period = 50;
+	//task1.elapsedTime = task1.period;
+	//task1.TickFct = &keypad_tick;
+
+	//Task2
+	task2.state = START;
+	task2.period = 1000;
+	task2.elapsedTime = task2.period;
+	task2.TickFct = &LCD_tick;
 	
-	TimerSet(50);
+	TimerSet(1000);
 	TimerOn();
+	LCD_init();
+
+
+
 	
 	unsigned short i;
     /* Replace with your application code */
@@ -80,7 +123,7 @@ int main(void)
 				tasks[i]->state = tasks[i]->TickFct(tasks[i]->state);
 				tasks[i]->elapsedTime = 0;
 			}
-			tasks[i]->elapsedTime += 50;
+			tasks[i]->elapsedTime += tasks[i]->period;
 		}
 		while(!TimerFlag);
 		TimerFlag = 0;
