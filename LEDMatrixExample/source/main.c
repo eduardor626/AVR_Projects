@@ -8,59 +8,47 @@
  *	code, is my own original work.
  */
 #include <avr/io.h>
+#include <stdio.h>
 #ifdef _SIMULATE_
 #include "simAVRHeader.h"
-#include "../header/timer.h"
+#include <util/delay.h>
+#include "../header/max7219.h"
+
 #endif
+
+
+
 
 int main(void) {
 
-    //Output for rows
-    DDRC = 0xFF;
-    PORTC = 0x00;
+    DDRD = 0xFF;
+    PORTD = 0x00;
+
+    max7219_init();
     
-    //Output for columns
-    DDRA = 0xFF;
-    PORTA = 0x00;
+    uint8_t ic = 0;
 
+    //init ic
+    for(ic=0; ic<MAX7219_ICNUMBER; ic++) {
+        max7219_shutdown(ic, 1); //power on
+        max7219_test(ic, 0); //test mode off
+        max7219_decode(ic, 0); //use led matrix
+        max7219_intensity(ic, 12); //intensity
+        max7219_scanlimit(ic, 7); //set number of digit to drive
+    }
 
-    TimerSet(250);
-    TimerOn();
-
-    unsigned int column = 0;
-    unsigned int row = 0;
-
-
-    while (1)
-    {
-
-        if(row < 7)
-        {
-            if(column < 7)
-            {
-                column++;
-            }
-            else
-            {
-                row++;
-                column = 0;
+    uint8_t i = 0;
+    uint8_t j = 0;
+    //do test loop for every ic
+    for(;;) {
+        for(ic=0; ic<MAX7219_ICNUMBER; ic++) {
+            for(i=0; i<8; i++) {
+                for(j=0; j<8; j++) {
+                    max7219_digit(ic, i, (1<<j));
+                    _delay_ms(50);
+                }
+                max7219_digit(ic, i, 0);
             }
         }
-        else
-        {
-            if(column < 7)
-            {
-                column++;
-            }
-            else
-            {
-                row = 0;
-                column = 0;
-            }
-        }
-       PORTA = (0x00 | (1 << column)); //columns
-       PORTC = (0xFF & ~(1 << row)); //rows
-        while(!TimerFlag);
-        TimerFlag = 0;
     }
 }

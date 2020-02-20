@@ -108,8 +108,8 @@ enum STATES { start, init, press, release, wait, play } state;
 
 unsigned char button_on=0;
 double sound_arr[5]={ 261.63, 329.63, 392.00, 493.88, 523.25 };
-unsigned char sound_lasting[5]={3, 1, 2, 1, 6 };
-unsigned char sound_waiting[5]={1, 2, 1, 2, 0 };
+unsigned char sound_lasting[5]={6, 4, 5, 4, 9 };
+unsigned char sound_waiting[5]={1, 2, 1, 2, 0 }; 
 unsigned char i=0;
 unsigned char cnt=0;
 
