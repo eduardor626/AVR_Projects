@@ -1,12 +1,13 @@
 /*	Author: Eduardo Rocha
  *  Partner(s) Name: Arturo Alvarado
  *	Lab Section:
- *	Assignment: Lab #11  Exercise #3
+ *	Assignment: Lab #11  Exercise #2
  *	Exercise Description: 
 
-	Combine the functionality of the keypad and LCD so when keypad is pressed and released, 
-	the character of the button pressed is displayed on the LCD, and stays displayed until a 
-	different button press occurs (May be accomplished with two tasks: LCD interface & modified test harness).
+	Use the LCD code, along with a button and/or time delay to display the message "CS120B is Legend... wait for it DARY!" 
+	The string will not fit on the display all at once, so you will need to come up with some way to paginate or scroll the text.
+	
+	Note: If your LCD is exceptionally dim, adjust the resistance provided by the potentiometer connected to Pin #3.
 
 
  *
@@ -19,39 +20,32 @@
 #include "../header/scheduler.h"
 #include "../header/io.h"
 
-
-
-unsigned char symbol=0x00; //our shared variable from keypad task to lcd print task
-
-enum keypad_STATES {start} keypad_state;	
+enum keypad_STATES {start} keypad_state;
+	
 int keypad_tick(int keypad_state){
 	unsigned char x = GetKeypadKey();
 	switch(keypad_state){
 		case start: 
 			keypad_state = start;
 			switch(x) {
-				case '\0': symbol = symbol; 
-							PORTB = 0x01;
-							break;
-				case '1': symbol = 0x01; 
-							PORTB = 0x03;
-							break;
-				case '2': symbol = 0x02; break;
-				case '3': symbol = 0x03; break;
-				case 'A': symbol = 0x0A; break;
-				case '4': symbol = 0x04; break;
-				case '5': symbol = 0x05; break;
-				case '6': symbol = 0x06; break;
-				case 'B': symbol = 0x0B; break;
-				case '7': symbol = 0x07; break;
-				case '8': symbol = 0x08; break;
-				case '9': symbol = 0x09; break;
-				case 'C': symbol = 0x0C; break;
-				case '*': symbol = 0x0E; break;
-				case '0': symbol = 0x00; break;
-				case '#': symbol = 0x0F; break;
-				case 'D': symbol = 0x0D; break;
-				default: symbol = 0x1B; break;
+				case '\0': PORTB = 0x00; break;
+				case '1': PORTB = 0x01; break;
+				case '2': PORTB = 0x02; break;
+				case '3': PORTB = 0x03; break;
+				case 'A': PORTB = 0x0A; break;
+				case '4': PORTB = 0x04; break;
+				case '5': PORTB = 0x05; break;
+				case '6': PORTB = 0x06; break;
+				case 'B': PORTB = 0x0B; break;
+				case '7': PORTB = 0x07; break;
+				case '8': PORTB = 0x08; break;
+				case '9': PORTB = 0x09; break;
+				case 'C': PORTB = 0x0C; break;
+				case '*': PORTB = 0x0E; break;
+				case '0': PORTB = 0x00; break;
+				case '#': PORTB = 0x0F; break;
+				case 'D': PORTB = 0x0D; break;
+				default: PORTB = 0x1B; break;
 			}
 			break;
 		
@@ -62,53 +56,66 @@ int keypad_tick(int keypad_state){
 	return keypad_state;
 }
 
-enum LCD_STATES {PRINT} LCD_STATE;
-int Lcd_state_machine(LCD_STATE)
+char *name = "CS120B is Legend... wait for it DARY!";
+//there are 38 characters in the string
+unsigned char count = 0;
+unsigned char output[17]; //character array that will hold the output
+enum Lcd_States{START, PRINT} LCD_STATE;
+int LCD_tick(int LCD_STATE)
 {
 	switch(LCD_STATE)
 	{
-		case PRINT:
-				LCD_Cursor(1);
-				LCD_WriteData(symbol+'0');
+		case START:
+			LCD_STATE = PRINT;
 			break;
-		default:break;
-
+		case PRINT:
+			LCD_STATE = PRINT;
+			for (int j = 0; j < 16; ++j)
+  			{
+    			output[j] = name[(count+j) % 38];
+  			}
+  			count = (count + 1);
+  			LCD_DisplayString(1, output);
+			break;
 	}
 	return LCD_STATE;
+
+
 }
 
-//setting up global task variables
-task task1, task2;
+task task2;
 
 int main(void)
 {
-	DDRA = 0xF0; PORTA = 0x0F; //our keypad port
-	DDRB = 0xFF; PORTB = 0x00; //our test port to see which state we are currently at
-	DDRC = 0xFF; PORTC = 0x00; //lcd port
-	DDRD = 0xFF; PORTD = 0x00; 
+	DDRB = 0xFF; PORTB = 0x00;
+	DDRC = 0xFF; PORTC = 0x00;
+	DDRD = 0xFF; PORTD = 0x00;
 	
-	task *tasks[] = {&task1, &task2};
+	task *tasks[] = {&task2};
 	const unsigned short numTasks = sizeof(tasks)/sizeof(task*);
 
 	
 	//Task 1
-	task1.state = start;
-	task1.period = 50;
-	task1.elapsedTime = task1.period;
-	task1.TickFct = &keypad_tick;
+	//task1.state = start;
+	//task1.period = 50;
+	//task1.elapsedTime = task1.period;
+	//task1.TickFct = &keypad_tick;
 
 	//Task2
-	task2.state = PRINT;
-	task2.period = 50;
+	task2.state = START;
+	task2.period = 1000;
 	task2.elapsedTime = task2.period;
-	task2.TickFct = &Lcd_state_machine;
+	task2.TickFct = &LCD_tick;
 	
-	TimerSet(50);
+	TimerSet(1000);
 	TimerOn();
 	LCD_init();
 
+
+
 	
 	unsigned short i;
+    /* Replace with your application code */
     while (1) 
     {
 		for(i = 0; i < numTasks; i++){

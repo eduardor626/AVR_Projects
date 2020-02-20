@@ -38,19 +38,19 @@ int keypad_tick(int keypad_state){
 							break;
 				case '2': symbol = 0x02; break;
 				case '3': symbol = 0x03; break;
-				case 'A': symbol = 0x0A; break;
+				case 'A': symbol = 0x41-'0'; break;
 				case '4': symbol = 0x04; break;
 				case '5': symbol = 0x05; break;
 				case '6': symbol = 0x06; break;
-				case 'B': symbol = 0x0B; break;
+				case 'B': symbol = 0x42-'0'; break;
 				case '7': symbol = 0x07; break;
 				case '8': symbol = 0x08; break;
 				case '9': symbol = 0x09; break;
-				case 'C': symbol = 0x0C; break;
-				case '*': symbol = 0x0E; break;
+				case 'C': symbol = 0x43-'0'; break;
+				case '*': symbol = 0x2A-'0'; break;
 				case '0': symbol = 0x00; break;
-				case '#': symbol = 0x0F; break;
-				case 'D': symbol = 0x0D; break;
+				case '#': symbol = 0x23 - '0'; break;
+				case 'D': symbol = 0x44-'0'; break;
 				default: symbol = 0x1B; break;
 			}
 			break;
