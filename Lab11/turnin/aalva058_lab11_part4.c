@@ -1,3 +1,23 @@
+/*	Author: Eduardo Rocha
+ *  Partner(s) Name: Arturo Alvarado
+ *	Lab Section:
+ *	Assignment: Lab #11  Exercise #4
+ *	Exercise Description: 
+	(Challenge) Notice that you can visually see the LCD refresh each character 
+	(display a lengthy string then update to a different lengthy string). 
+	Design a system where a single character is updated in the displayed string rather than the entire string itself. 
+	Use the functions provided in “io.c”.
+
+	An example behavior would be to initially display a lengthy string, such as “Congratulations!”. 
+	The first keypad button pressed changes the first character ‘C’ to the button pressed. The second keypad press 
+	changes the second character to the second button pressed, etc. No refresh should be observable during the character update.
+
+ *
+ *	I acknowledge all content contained herein, excluding template or example
+ *	code, is my own original work.
+ */
+
+
 #include <avr/io.h>
 #include "keypad.h"
 #include "timer.h"
@@ -103,7 +123,7 @@ int main(void)
 	TimerSet(200);
 	TimerOn();
 	LCD_init();
-	LCD_DisplayString(1, "Congratulation!");
+	LCD_DisplayString(1, "Congratulations!");
 	LCD_Cursor(1);
 
 	
