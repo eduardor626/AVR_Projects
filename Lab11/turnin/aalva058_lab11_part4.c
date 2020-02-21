@@ -16,82 +16,132 @@
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.
  */
-
-
 #include <avr/io.h>
 #include "keypad.h"
 #include "timer.h"
 #include "scheduler.h"
 #include "io.h"
 
+unsigned char character = 0x00; //used between LCD and Keypad
+unsigned char position_i = 0x00;
+unsigned char pause_state=0;
 
-
-unsigned char symbol=0x00; //our shared variable from keypad task to lcd print task
-unsigned char cursor_i=0;
-unsigned char is_hold_state=0;
-
-enum keypad_STATES {start} keypad_state;
-int keypad_tick(int keypad_state){
-	unsigned char x = GetKeypadKey();
-	switch(keypad_state){
-		case start:
-		keypad_state = start;
+enum DAIL_STATES {INIT} dail_state;
+int dail_tick(int dail_states){
+	unsigned char x =  GetKeypadKey();
+	switch(dail_states){
+		case INIT:
+		dail_states = INIT;
 		switch(x) {
-			case '\0': symbol = symbol; is_hold_state=0; break;
-			case '1': symbol = 0x01; is_hold_state=1; break;
-			case '2': symbol = 0x02; is_hold_state=1; break;
-			case '3': symbol = 0x03; is_hold_state=1; break;
-			case 'A': symbol = (0x41 - '0'); is_hold_state=1; break;
-			case '4': symbol = 0x04; is_hold_state=1; break;
-			case '5': symbol = 0x05; is_hold_state=1; break;
-			case '6': symbol = 0x06; is_hold_state=1; break;
-			case 'B': symbol = (0x42 - '0'); is_hold_state=1; break;
-			case '7': symbol = 0x07; is_hold_state=1; break;
-			case '8': symbol = 0x08; is_hold_state=1; break;
-			case '9': symbol = 0x09; is_hold_state=1; break;
-			case 'C': symbol = (0x43 - '0'); is_hold_state=1; break;
-			case '*': symbol = 0x2A - '0'; is_hold_state=1; break;
-			case '0': symbol = 0x00; is_hold_state=1; break;
-			case '#': symbol = 0x23 - '0'; is_hold_state=1; break;
-			case 'D': symbol = (0x44 - '0'); is_hold_state=1; break;
-			default: symbol = 0x1B; break;
+			case '\0': 
+				character = character; 
+				pause_state=0; 
+				break;
+			case '0':
+				character = 0x00;
+				pause_state=1;
+				break;
+			case '1': 
+				character = 0x01; 
+				pause_state=1; 
+				break;
+			case '2': 
+				character = 0x02; 
+				pause_state=1; 
+				break;
+			case '3': 
+				character = 0x03; 
+				pause_state=1; 
+				break;
+			case '4': 
+				character = 0x04; 
+				pause_state=1; 
+				break;
+			case '5': 
+				character = 0x05; 
+				pause_state=1; 
+				break;
+			case '6': 
+				character = 0x06; 
+				pause_state=1; 
+				break;
+			case '7': 
+				character = 0x07; 
+				pause_state=1; 
+				break;
+			case '8': 
+				character = 0x08; 
+				pause_state=1; 
+				break;
+			case '9': 
+				character = 0x09; 
+				pause_state=1; 
+				break;
+			case '*': 
+				character = 0x2A - '0'; 
+				pause_state=1; 
+				break;
+			case 'A': 
+				character = (0x41 - '0'); 
+				pause_state=1; 
+				break;
+			case 'B': 
+				character = (0x42 - '0'); 
+				pause_state=1; 
+				break;
+			case 'C':
+				character = (0x43 - '0');
+				pause_state=1;
+				break;
+			case 'D':
+				character = (0x44 - '0');
+				pause_state=1;
+				break;
+			case '#': 
+				character = 0x23 - '0'; 
+				pause_state=1; 
+				break;
+			default: 
+				character = 0x1B; 
+				break;
 		}
 		break;
 		
 		default:
-		keypad_state = start;
+		dail_states = INIT;
 		break;
 	}
-	return keypad_state;
+	return dail_states;
 }
-enum LCD_STATES {PRINT, HOLD} LCD_STATE;
+enum DISPLAY_STATES {DISPLAY, WAIT} DISPLAY_STATE;
 
 
-int Lcd_state_machine(LCD_STATE)
+int Display_Function(DISPLAY_STATE)
 {
-	switch(LCD_STATE)
+	switch(DISPLAY_STATE)
 	{
-		case PRINT:
+		case DISPLAY:
 
-		if (cursor_i>32){
-			cursor_i=0;
-			LCD_STATE=PRINT;
-			}else{
-			LCD_Cursor(cursor_i);
-			LCD_WriteData(symbol+'0');
-			++cursor_i;
-			is_hold_state=0;
-			LCD_STATE=HOLD;
+		if (position_i>32){
+			position_i=0;
+			DISPLAY_STATE=DISPLAY;
+		}else{
+			LCD_Cursor(position_i);
+			LCD_WriteData(character+'0');
+			++position_i;
+			pause_state=0;
+			DISPLAY_STATE=WAIT;
 		}
 		break;
 		
-		case HOLD:	LCD_STATE=(is_hold_state==0) ? HOLD : PRINT;
-		
-		
-		default:break;
+		case WAIT:	
+			DISPLAY_STATE = (pause_state==0) ? WAIT : DISPLAY;
+				
+		default:
+			break;
 
 	}
-	return LCD_STATE;
+	return DISPLAY_STATE;
 }
 
 //setting up global task variables
@@ -99,9 +149,9 @@ task task1, task2;
 
 int main(void)
 {
-	DDRA = 0xF0; PORTA = 0x0F; //our keypad port
-	DDRB = 0xFF; PORTB = 0x00; //our test port to see which state we are currently at
-	DDRC = 0xFF; PORTC = 0x00; //lcd port
+	DDRA = 0xF0; PORTA = 0x0F; //keypad 
+	DDRB = 0xFF; PORTB = 0x00; //test port 
+	DDRC = 0xFF; PORTC = 0x00; //lcd 
 	DDRD = 0xFF; PORTD = 0x00;
 	
 	task *tasks[] = {&task1, &task2};
@@ -109,21 +159,21 @@ int main(void)
 
 	
 	//Task 1
-	task1.state = start;
+	task1.state = INIT;
 	task1.period = 50;
 	task1.elapsedTime = task1.period;
-	task1.TickFct = &keypad_tick;
+	task1.TickFct = &dail_tick;
 
 	//Task2
-	task2.state = PRINT;
+	task2.state = DISPLAY;
 	task2.period = 50;
 	task2.elapsedTime = task2.period;
-	task2.TickFct = &Lcd_state_machine;
+	task2.TickFct = &Display_Function;
 	
 	TimerSet(200);
 	TimerOn();
 	LCD_init();
-	LCD_DisplayString(1, "Congratulations!");
+	LCD_DisplayString(1, "Our final demo!!!!!!!!!!!!!");
 	LCD_Cursor(1);
 
 	
@@ -142,3 +192,4 @@ int main(void)
 	}
 	return 0;
 }
+
