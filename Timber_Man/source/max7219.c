@@ -331,5 +331,19 @@ void max7219_init() {
 	MAX7219_DINPORT &= ~(1 << MAX7219_DININPUT);
 	MAX7219_CLKPORT &= ~(1 << MAX7219_CLKINPUT);
 	MAX7219_LOADPORT &= ~(1 << MAX7219_LOADINPUT);
+
+	for (unsigned char ic = 0; ic < MAX7219_ICNUMBER; ic++) {
+		max7219_clearDisplay(ic);
+	}
+
+	//init ic
+	for (unsigned char ic = 0; ic < MAX7219_ICNUMBER; ic++) {
+		max7219_shutdown(ic, 1); //power on
+		max7219_test(ic, 0); //test mode off
+		max7219_decode(ic, 0); //use led matrix
+		max7219_intensity(ic, 2); //intensity
+		max7219_scanlimit(ic, 7); //set number of digit to drive
+	}
+
 }
 
