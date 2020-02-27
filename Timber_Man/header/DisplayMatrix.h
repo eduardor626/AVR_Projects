@@ -11,16 +11,56 @@ unsigned char four[] = { 0x00, 0x0C, 0x1C, 0x2C, 0x4C, 0x7E, 0x0C, 0x0C };
 unsigned char three[] = { 0x00, 0x3C, 0x66, 0x06, 0x1C, 0x0C, 0x66, 0x3C };
 unsigned char two[] = { 0x00, 0x3C, 0x66, 0x06, 0x0C, 0x30, 0x60, 0x7E };
 unsigned char one[] = { 0x00, 0x18, 0x18, 0x38, 0x18, 0x18, 0x18, 0x7E };
+unsigned char frown[] = {0x3C,0x42,0xA5,0x81,0x99,0xA5,0x42,0x3C};
 
-//Tree Trunk Variable
-const unsigned char treeTrunk = 0x18;
-//Timber Man character position
-unsigned char timberMan = 0x40;
+branch branches[7]; 
 
-//LeftBranch
-unsigned char leftBranch = 0x60;
-unsigned char rightBranch = 0x06;
-unsigned char emptyBranch = treeTrunk;
+void initBranches(){
+    branch1.row= 0;
+    branch1.side = 'L';
+    branch1.value = leftBranch;
+    branch1.whichIC = 0;
+
+    branch2.row= 2;
+    branch2.side = 'R';
+    branch2.value = rightBranch;
+    branch2.whichIC = 0;
+
+    branch3.row= 4;
+    branch3.side = 'R';
+    branch3.value = rightBranch;
+    branch3.whichIC = 0;
+
+    branch4.row= 6;
+    branch4.side = 'L';
+    branch4.value = leftBranch;
+    branch4.whichIC = 0;
+
+    branch5.row= 8;
+    branch5.side = 'L';
+    branch5.value = leftBranch;
+    branch5.whichIC = 1;
+
+    branch6.row= 10;
+    branch6.side = 'R';
+    branch6.value = rightBranch;
+    branch6.whichIC = 1;
+
+    branch7.row= 12;
+    branch7.side = 'L';
+    branch7.value = leftBranch;
+    branch7.whichIC = 1;
+
+    branches[0] = branch1;
+    branches[1] = branch2;
+    branches[2] = branch3;
+    branches[3] = branch4;
+    branches[4] = branch5;
+    branches[5] = branch6;
+    branches[6] = branch7;
+
+}
+
 
 unsigned char countdownFrom = 6;
 
@@ -77,31 +117,58 @@ void countdown(){
 void initializeMatrix(){
     max7219_clearDisplay(0);
     max7219_clearDisplay(1);
+
+    initBranches();
+
+    //creating the trunk
     for (unsigned char j = 0; j < 8; j++) {
-        max7219_digit(0, j,treeTrunk); //first LCD at row , equal value at five[row]
+        max7219_digit(0, j,treeTrunk); 
         max7219_digit(1,j,treeTrunk);
-        if(j == 6){
-            max7219_digit(1,j,(treeTrunk|timberMan));
+    }
+
+    //creating the branches
+    for(unsigned char j =0; j<7; j++){
+        if(branches[j].row > 7){
+            unsigned int r = branches[j].row - 8;
+            max7219_digit(1,r,branches[j].value);
+        }else{
+            max7219_digit(0,branches[j].row,branches[j].value);
         }
     }
 
-    unsigned int branch1row = 0, branch2row = 2, branch3row = 4, branch4row = 6;
-    unsigned int branch5row = 0, branch6row = 2, branch7row = 4; 
-    //initialize branches
-    max7219_digit(0,branch1row,leftBranch | treeTrunk);
-    max7219_digit(0,branch2row,rightBranch| treeTrunk);
-    max7219_digit(0,branch3row,rightBranch| treeTrunk);
-    max7219_digit(0,branch4row,leftBranch | treeTrunk);
-
-    max7219_digit(1,branch5row,leftBranch | treeTrunk);
-    max7219_digit(1,branch6row,rightBranch | treeTrunk);
-    max7219_digit(1,branch7row,leftBranch | treeTrunk);    
+    //placing timber man
+    max7219_digit(1,6,(treeTrunk|timberMan));
+}   
 
 
+void displayMatrix(){
+    //creating the trunk
+    for (unsigned char j = 0; j < 8; j++) {
+        max7219_digit(0, j,treeTrunk); 
+        max7219_digit(1,j,treeTrunk);
+    }
+    //creating the branches
+    for(unsigned char j =0; j<7; j++){
+        if(branches[j].row > 7){
+            unsigned int r = branches[j].row - 8;
+            max7219_digit(1,r,branches[j].value);
+        }else{
+            max7219_digit(0,branches[j].row,branches[j].value);
+        }
+    }
+    //placing timber man
+    max7219_digit(1,6,(treeTrunk|timberMan));
 }
 
+void displayFrown(){
+    for (unsigned char j = 0; j < 8; j++) {
+        max7219_digit(0, j, frown[j]); //first LCD at row , equal value at five[row]
+    }
+}
+
+
 //DISPLAY BEGIN
-enum DisplayStates {Display_Start, Display_Countdown, Display_Print,Wait} DisplayState;
+enum DisplayStates {Display_Start, Display_Countdown, Display_Print,Display_WaitForNextGame} DisplayState;
 
 int DisplaySM(int DisplayState)
 {
@@ -119,9 +186,15 @@ int DisplaySM(int DisplayState)
             break;
         case Display_Print:
             DisplayState = Display_Print;
+            if(GameOver == 1){
+                max7219_clearDisplay(1);
+                max7219_clearDisplay(0);
+                DisplayState = Display_WaitForNextGame;
+            }
             break;
-        case Wait:
-            DisplayState = Wait;
+        case Display_WaitForNextGame:
+            DisplayState = Display_WaitForNextGame;
+            break;
         default:
             DisplayState = Display_Countdown;
             break;
@@ -135,17 +208,16 @@ int DisplaySM(int DisplayState)
         case Display_Countdown:
             countdown();
             if(countdownFrom == 0){
+                initializeMatrix();
                 DisplayState = Display_Print;
             }
             break;
         case Display_Print:
-            initializeMatrix();
-            if(countdownFrom == 0){
-                DisplayState = Wait;
-            }
+            DisplayState = Display_Print;
+            displayMatrix();
             break;
-        case Wait:
-            
+        case Display_WaitForNextGame:
+            displayFrown();
             break;
         default:
             break;

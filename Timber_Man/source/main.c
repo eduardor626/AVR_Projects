@@ -1,4 +1,4 @@
-/*	Author: eduardorocha
+/*	Author: Eduardo Rocha
 *  Partner(s) Name: 
 *	Lab Section:
 *	Assignment: Lab #  Exercise #
@@ -12,32 +12,74 @@
 #ifdef _SIMULATE_
 #include "simAVRHeader.h"
 #include <util/delay.h>
-//#include "../header/max7219.h"
+
+
+
+
+
+//======== Shared Variables ========
+typedef struct _branch{
+    unsigned char row;        
+    unsigned char side;       
+    unsigned char value; 
+    unsigned char whichIC; 
+} branch;
+
+
+//Tree Trunk Variable
+const unsigned char treeTrunk = 0x18;
+//Timber Man character position
+unsigned char timberMan = 0x40;
+//Branches 
+const unsigned char leftBranch = (0x60 | treeTrunk); 
+const unsigned char rightBranch = (0x06 | treeTrunk); 
+const unsigned char emptyBranch = (0x00| treeTrunk);
+//Array of Branches to choose from
+unsigned char whichBranch[4] = {emptyBranch,leftBranch,rightBranch};
+
+branch branches[7];
+
+branch branch1;
+branch branch2;
+branch branch3;
+branch branch4;
+branch branch5;
+branch branch6;
+branch branch7;
+branch branch8;
+
+
+//GameLogic Variables
+unsigned char GameOver;
+unsigned char collision;
+unsigned char move;
+unsigned char timbermanSide;
+
+
+//headers for game
 #include "../header/DisplayMatrix.h"
 #include "../header/scheduler.h"
 #include "../header/timer.h"
-
+#include "../header/GameLogic.h"
 #endif
 
-task DisplayTask;
+task DisplayTask, GameLogicTask;
 
+int main() {
 
-int main(void) {
 
     //Initialize PORTD for LCD Display
     DDRD = 0xFF;
     PORTD = 0x00;
 
-    unsigned int a;
     max7219_init(); //init LCD Display
-
 
     //Setting period
     TimerSet(1000);
     TimerOn();
 
     //Defining our tasks 
-    task *tasks[] = {&DisplayTask};
+    task *tasks[] = {&DisplayTask,&GameLogicTask};
     const uint8_t tasksSize = sizeof(tasks)/sizeof(tasks[0]);
 
     //The Display Initializing
@@ -45,6 +87,15 @@ int main(void) {
     DisplayTask.period = 1000;
     DisplayTask.elapsedTime = 1000;
     DisplayTask.TickFct = &DisplaySM;
+
+    //The Game Logic Initializing
+    GameLogicTask.state = GameLogic_Start;
+    GameLogicTask.period = 1000;
+    GameLogicTask.elapsedTime = 1000;
+    GameLogicTask.TickFct = &GameLogicSM;
+
+    unsigned int a;
+
 
     while(1)
     {
