@@ -13,10 +13,6 @@
 #include "simAVRHeader.h"
 #include <util/delay.h>
 
-
-
-
-
 //======== Shared Variables ========
 typedef struct _branch{
     unsigned char row;        
@@ -55,6 +51,12 @@ unsigned char collision;
 unsigned char move;
 unsigned char timbermanSide;
 
+//Game Variables
+unsigned char Reset;
+unsigned char Start;
+unsigned char leftMove;
+unsigned char rightMove;
+
 
 //headers for game
 #include "../header/DisplayMatrix.h"
@@ -68,9 +70,16 @@ task DisplayTask, GameLogicTask;
 int main() {
 
 
-    //Initialize PORTD for LCD Display
+    //Initializing PORTS for Input/Output
+    DDRA = 0x00;
+    PORTA = 0xFF;
+
+    //PORTD for LCD Display
     DDRD = 0xFF;
     PORTD = 0x00;
+
+
+
 
     max7219_init(); //init LCD Display
 
@@ -94,7 +103,6 @@ int main() {
     GameLogicTask.elapsedTime = 1000;
     GameLogicTask.TickFct = &GameLogicSM;
 
-    unsigned int a;
 
 
     while(1)

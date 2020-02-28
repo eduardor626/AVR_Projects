@@ -17,8 +17,13 @@ void shiftDown(){
 
 //moving timberMan character
 void moveTimberMan(){
-
-
+	if(rightMove == 0x01 && leftMove == 0x00){
+		timberMan = 0x02;
+		timbermanSide = 'R';
+	}else if(leftMove == 0x02 && rightMove == 0x00){
+		timberMan = 0x40;
+		timbermanSide = 'L';
+	}
 }
 
 
@@ -39,6 +44,8 @@ enum GameLogicStates {GameLogic_Start, GameLogic_Init, GameLogic_WaitForPress, G
 
 int GameLogicSM(int GameLogicState){
 
+	unsigned int readInput = (~PINA & 0x03);
+
 	//Transitions
 	switch(GameLogicState)
 	{
@@ -53,15 +60,28 @@ int GameLogicSM(int GameLogicState){
 			break;
 		case GameLogic_WaitForPress:
 			move = 0;
-			GameLogicState = GameLogic_Wait;
+			if(readInput == 0x01 || readInput == 0x02){
+				rightMove = (readInput & 0x01);
+				leftMove = (readInput & 0x02);
+				GameLogicState = GameLogic_Wait;
+			}else{
+				GameLogicState = GameLogic_WaitForPress;
+
+			}
 			break;
 		case GameLogic_Wait:
-			GameLogicState= GameLogic_ShiftCheck;
+			if(readInput == 0x00){
+				GameLogicState= GameLogic_ShiftCheck;
+			}else{
+				GameLogicState = GameLogic_Wait;
+			}
 			break;
 		case GameLogic_ShiftCheck:
+			moveTimberMan();
+			checkCollisions();
 			shiftDown();
 			checkCollisions();
-			GameLogicState = GameLogic_Wait;
+			GameLogicState = GameLogic_WaitForPress;
 			break;
 		default: break;
 

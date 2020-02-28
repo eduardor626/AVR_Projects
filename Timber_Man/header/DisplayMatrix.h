@@ -13,8 +13,9 @@ unsigned char two[] = { 0x00, 0x3C, 0x66, 0x06, 0x0C, 0x30, 0x60, 0x7E };
 unsigned char one[] = { 0x00, 0x18, 0x18, 0x38, 0x18, 0x18, 0x18, 0x7E };
 unsigned char frown[] = {0x3C,0x42,0xA5,0x81,0x99,0xA5,0x42,0x3C};
 
-branch branches[7]; 
+branch branches[7];
 
+//Creating Branches at the start of the game
 void initBranches(){
     branch1.row= 0;
     branch1.side = 'L';
@@ -157,7 +158,8 @@ void displayMatrix(){
         }
     }
     //placing timber man
-    max7219_digit(1,6,(treeTrunk|timberMan));
+    unsigned int timberManRow = max7219_getdigit6(1);
+    max7219_digit(1,6,(timberMan | timberManRow));
 }
 
 void displayFrown(){
