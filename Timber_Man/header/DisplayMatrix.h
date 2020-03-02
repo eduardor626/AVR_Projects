@@ -12,6 +12,8 @@ unsigned char three[] = { 0x00, 0x3C, 0x66, 0x06, 0x1C, 0x0C, 0x66, 0x3C };
 unsigned char two[] = { 0x00, 0x3C, 0x66, 0x06, 0x0C, 0x30, 0x60, 0x7E };
 unsigned char one[] = { 0x00, 0x18, 0x18, 0x38, 0x18, 0x18, 0x18, 0x7E };
 unsigned char frown[] = {0x3C,0x42,0xA5,0x81,0x99,0xA5,0x42,0x3C};
+//To verify that the countdown has finished
+unsigned char countdownComplete = 0;
 
 branch branches[7];
 
@@ -64,48 +66,89 @@ void initBranches(){
 
 
 unsigned char countdownFrom = 6;
+unsigned char ticks = 0;
 
 
 //Function that will display a countdown on the LED Matrix 5,4,3,2,1 etc.
 void countdown(){
+
     switch(countdownFrom)
     {
         case 6:
-            countdownFrom--;
+            countdownComplete = 0;
+            if(ticks > 5){
+                countdownFrom--;
+                ticks = 0;
+            }else{
+                ticks++;
+            }
             break;
         case 5:
+            if(ticks > 5){
             for (unsigned char j = 0; j < 8; j++) {
                 max7219_digit(0, j, five[j]); //first LCD at row , equal value at five[row]
             }
             countdownFrom--;
+            ticks = 0;
+            }else{
+                ticks ++;
+            }
 
             break;
         case 4:
+            if(ticks>5){
             for (unsigned char j = 0; j < 8; j++) {
                 max7219_digit(0, j, four[j]); //first LCD at row , equal value at five[row]
             }
             countdownFrom--;
+            ticks = 0;
+            }else{
+                ticks++;
+            }
             break;
         case 3:
+            if(ticks > 5){
             for (unsigned char j = 0; j < 8; j++) {
                 max7219_digit(0, j, three[j]); //first LCD at row , equal value at five[row]
             }
             countdownFrom--;
+            ticks = 0;
+            }else{
+                ticks++;
+            }   
             break;
 
         case 2:
+            if(ticks > 5){
             for (unsigned char j = 0; j < 8; j++) {
                 max7219_digit(0, j, two[j]); //first LCD at row , equal value at five[row]
             }
             countdownFrom--;
+            ticks = 0;
+            }else{
+                ticks++;
+            }
             break;
 
         case 1:
+            if(ticks > 5){
+
             for (unsigned char j = 0; j < 8; j++) {
                 max7219_digit(0, j, one[j]); //first LCD at row , equal value at five[row]
             }
             countdownFrom = 0;
+            ticks = 0;
+            }else{
+                ticks++;
+
+            }
             break;
+        case 0:
+            if(ticks > 5){
+                countdownComplete = 1;
+            }else{
+                ticks++;
+            }
         default:
             break;
     }
@@ -209,7 +252,7 @@ int DisplaySM(int DisplayState)
             break;
         case Display_Countdown:
             countdown();
-            if(countdownFrom == 0){
+            if(countdownComplete == 1){
                 initializeMatrix();
                 DisplayState = Display_Print;
             }

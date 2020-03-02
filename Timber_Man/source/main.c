@@ -1,8 +1,9 @@
-/*	Author: Eduardo Rocha
-*  Partner(s) Name: 
-*	Lab Section:
-*	Assignment: Lab #  Exercise #
-*	Exercise Description: [optional - include for your own benefit]
+/*	
+    Author: Eduardo Rocha
+*	Assignment: Final Project Timber Man
+*	Exercise Description: 
+    
+    This is the main.c of my Timber Man Variation game.
 *
 *	I acknowledge all content contained herein, excluding template or example
 *	code, is my own original work.
@@ -84,7 +85,7 @@ int main() {
     max7219_init(); //init LCD Display
 
     //Setting period
-    TimerSet(1000);
+    TimerSet(200);
     TimerOn();
 
     //Defining our tasks 
@@ -93,14 +94,14 @@ int main() {
 
     //The Display Initializing
     DisplayTask.state = Display_Start;
-    DisplayTask.period = 1000;
-    DisplayTask.elapsedTime = 1000;
+    DisplayTask.period = 200;
+    DisplayTask.elapsedTime = 200;
     DisplayTask.TickFct = &DisplaySM;
 
     //The Game Logic Initializing
     GameLogicTask.state = GameLogic_Start;
-    GameLogicTask.period = 1000;
-    GameLogicTask.elapsedTime = 1000;
+    GameLogicTask.period = 200;
+    GameLogicTask.elapsedTime = 200;
     GameLogicTask.TickFct = &GameLogicSM;
 
 
@@ -118,7 +119,7 @@ int main() {
                 tasks[i]->elapsedTime = 0;
             }
             //update elasped time
-                tasks[i]->elapsedTime += 1000;
+                tasks[i]->elapsedTime += 200;
         }
         while(!TimerFlag);
         TimerFlag = 0;
