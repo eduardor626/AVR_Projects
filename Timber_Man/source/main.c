@@ -12,6 +12,7 @@
 #include <stdio.h>
 #ifdef _SIMULATE_
 #include "simAVRHeader.h"
+#include "../header/io.h"
 #include <util/delay.h>
 
 //======== Shared Variables ========
@@ -64,35 +65,47 @@ unsigned char rightMove;
 #include "../header/scheduler.h"
 #include "../header/timer.h"
 #include "../header/GameLogic.h"
+#include "../header/DisplayScore.h"
 #endif
 
-task DisplayTask, GameLogicTask;
+task DisplayTask, GameLogicTask, DisplayScoreTask;
 
 int main() {
 
 
     //Initializing PORTS for Input/Output
+
+    //PORTA for Button Inputs
     DDRA = 0x00;
     PORTA = 0xFF;
 
-    //PORTD for LCD Display
+    //PORTD for LED Matrix Display
     DDRD = 0xFF;
     PORTD = 0x00;
 
+    //PORTC for LCD HighScore Display
+    DDRC = 0xFF; 
+    PORTC = 0x00; 
+
+    unsigned int a;
 
 
 
-    max7219_init(); //init LCD Display
+
+    max7219_init(); //init LED Display
+    //initialize lcd
+    LCD_init();
+
 
     //Setting period
     TimerSet(200);
     TimerOn();
 
     //Defining our tasks 
-    task *tasks[] = {&DisplayTask,&GameLogicTask};
+    task *tasks[] = {&DisplayTask,&GameLogicTask,&DisplayScoreTask};
     const uint8_t tasksSize = sizeof(tasks)/sizeof(tasks[0]);
 
-    //The Display Initializing
+    //The LED Display Initializing
     DisplayTask.state = Display_Start;
     DisplayTask.period = 200;
     DisplayTask.elapsedTime = 200;
@@ -103,6 +116,12 @@ int main() {
     GameLogicTask.period = 200;
     GameLogicTask.elapsedTime = 200;
     GameLogicTask.TickFct = &GameLogicSM;
+
+    //The LCD Display Score Initializing
+    DisplayScoreTask.state = DisplayScore_Start;
+    DisplayScoreTask.period = 200;
+    DisplayScoreTask.elapsedTime = 200;
+    DisplayScoreTask.TickFct = &DisplayScoreSM;
 
 
 
