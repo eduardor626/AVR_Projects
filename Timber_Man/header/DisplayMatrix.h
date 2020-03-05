@@ -11,7 +11,8 @@ unsigned char four[] = { 0x00, 0x0C, 0x1C, 0x2C, 0x4C, 0x7E, 0x0C, 0x0C };
 unsigned char three[] = { 0x00, 0x3C, 0x66, 0x06, 0x1C, 0x0C, 0x66, 0x3C };
 unsigned char two[] = { 0x00, 0x3C, 0x66, 0x06, 0x0C, 0x30, 0x60, 0x7E };
 unsigned char one[] = { 0x00, 0x18, 0x18, 0x38, 0x18, 0x18, 0x18, 0x7E };
-unsigned char frown[] = {0x3C,0x42,0xA5,0x81,0x99,0xA5,0x42,0x3C};
+unsigned char frown[] = { 0x3C, 0x42, 0xA5, 0x81, 0x99, 0xA5, 0x42, 0x3C};
+unsigned char smile[]= { 0x3C, 0x42, 0xA5, 0x81, 0xA5, 0x99, 0x42, 0x3C};
 //To verify that the countdown has finished
 unsigned char countdownComplete = 0;
 
@@ -211,6 +212,12 @@ void displayFrown(){
     }
 }
 
+void displayHappy(){
+    for (unsigned char j = 0; j < 8; j++) {
+        max7219_digit(0, j, smile[j]); //first LCD at row , equal value at five[row]
+    }
+}
+
 
 //DISPLAY BEGIN
 enum DisplayStates {Display_Start, Display_Countdown, Display_Print,Display_WaitForNextGame} DisplayState;
@@ -264,7 +271,11 @@ int DisplaySM(int DisplayState)
             }
             break;
         case Display_WaitForNextGame:
-            displayFrown();
+            if(newHighScoreFlag != 0x00){
+                displayHappy();
+            }else{
+                displayFrown();
+            }
             break;
         default:
             break;

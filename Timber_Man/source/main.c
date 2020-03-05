@@ -33,8 +33,10 @@ const unsigned char emptyBranch = (0x00| treeTrunk);
 //Array of Branches to choose from
 unsigned char whichBranch[4] = {emptyBranch,leftBranch,rightBranch};
 
-branch branches[7];
 
+
+
+branch branches[7];
 branch branch1;
 branch branch2;
 branch branch3;
@@ -57,8 +59,13 @@ unsigned char Start;
 unsigned char leftMove;
 unsigned char rightMove;
 
+//Score Variables
+unsigned char newHighScoreFlag = 0x00;
+
+
 
 //headers for game
+#include "nokia5110.h"
 #include "../header/DisplayMatrix.h"
 #include "../header/scheduler.h"
 #include "../header/timer.h"
@@ -69,7 +76,6 @@ unsigned char rightMove;
 task DisplayTask, GameLogicTask, DisplayScoreTask;
 
 int main() {
-
 
     //Initializing PORTS for Input/Output
 
@@ -85,12 +91,21 @@ int main() {
     DDRC = 0xFF; 
     PORTC = 0x00; 
 
+    DDRB = 0xFF;
+    PORTB = 0x00;
+
     max7219_init(); //init LED Display
-    //initialize lcd
-    LCD_init();
+    LCD_init(); 	//init LCD 
+
+    nokia_lcd_init();
+    nokia_lcd_clear();
+    //nokia_lcd_write_string("No biggie!",1);
+    nokia_lcd_set_cursor(10, 15);
+    nokia_lcd_write_string("Hello", 2);
+    nokia_lcd_render();
 
     //Setting period
-    TimerSet(200);
+    TimerSet(100);
     TimerOn();
 
     //Defining our tasks 
@@ -98,31 +113,23 @@ int main() {
     const uint8_t tasksSize = sizeof(tasks)/sizeof(tasks[0]);
 
 
-    if (eeprom_read_byte((const char*) 1) != 0xFF) {
-        highScore = eeprom_read_byte((const char*) 1);
-    }
-
-
     //The LED Display Initializing
     DisplayTask.state = Display_Start;
-    DisplayTask.period = 200;
-    DisplayTask.elapsedTime = 200;
+    DisplayTask.period = 100;
+    DisplayTask.elapsedTime = 100;
     DisplayTask.TickFct = &DisplaySM;
 
     //The Game Logic Initializing
     GameLogicTask.state = GameLogic_Start;
-    GameLogicTask.period = 200;
-    GameLogicTask.elapsedTime = 200;
+    GameLogicTask.period = 100;
+    GameLogicTask.elapsedTime = 100;
     GameLogicTask.TickFct = &GameLogicSM;
 
     //The LCD Display Score Initializing
     DisplayScoreTask.state = DisplayScore_Start;
-    DisplayScoreTask.period = 200;
-    DisplayScoreTask.elapsedTime = 200;
+    DisplayScoreTask.period = 100;
+    DisplayScoreTask.elapsedTime = 100;
     DisplayScoreTask.TickFct = &DisplayScoreSM;
-
-
-
 
     while(1)
     {
@@ -137,7 +144,7 @@ int main() {
                 tasks[i]->elapsedTime = 0;
             }
             //update elasped time
-                tasks[i]->elapsedTime += 200;
+                tasks[i]->elapsedTime += 100;
         }
         while(!TimerFlag);
         TimerFlag = 0;
