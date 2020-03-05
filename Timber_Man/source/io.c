@@ -58,6 +58,14 @@ void LCD_DisplayString( unsigned char column, const unsigned char* string) {
    }
 }
 
+void LCD_DisplayThis(unsigned char column , const unsigned char*string){
+   unsigned char c = column;
+   while(*string) {
+      LCD_Cursor(c++);
+      LCD_WriteData(*string++);
+   }
+}
+
 void LCD_Cursor(unsigned char column) {
    if ( column < 17 ) { // 16x1 LCD: column < 9
 						// 16x2 LCD: column < 17

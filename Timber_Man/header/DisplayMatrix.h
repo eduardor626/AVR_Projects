@@ -231,11 +231,6 @@ int DisplaySM(int DisplayState)
             break;
         case Display_Print:
             DisplayState = Display_Print;
-            if(GameOver == 1){
-                max7219_clearDisplay(1);
-                max7219_clearDisplay(0);
-                DisplayState = Display_WaitForNextGame;
-            }
             break;
         case Display_WaitForNextGame:
             DisplayState = Display_WaitForNextGame;
@@ -258,8 +253,15 @@ int DisplaySM(int DisplayState)
             }
             break;
         case Display_Print:
-            DisplayState = Display_Print;
-            displayMatrix();
+            if(GameOver == 1){
+                max7219_clearDisplay(1);
+                max7219_clearDisplay(0);
+                DisplayState = Display_WaitForNextGame;
+            }else{
+                DisplayState = Display_Print;
+                displayMatrix();
+
+            }
             break;
         case Display_WaitForNextGame:
             displayFrown();

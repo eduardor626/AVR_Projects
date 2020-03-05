@@ -15,6 +15,7 @@ void shiftDown(){
 }
 
 
+
 //moving timberMan character
 void moveTimberMan(){
 	if(rightMove == 0x01 && leftMove == 0x00){
@@ -33,6 +34,7 @@ void checkCollisions(){
 		for(unsigned char j =0; j<7; j++){
 			if(branches[j].row == 14 && (branches[j].side == timbermanSide)){
 				GameOver = 1;
+				return;
 			}
     }
 

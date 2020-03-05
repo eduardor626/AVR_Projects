@@ -2,17 +2,15 @@
     Author: Eduardo Rocha
 *	Assignment: Final Project Timber Man
 *	Exercise Description: 
-    
-    This is the main.c of my Timber Man Variation game.
+        This is the main.c (driver) of my Timber Man Variation game.
 *
-*	I acknowledge all content contained herein, excluding template or example
-*	code, is my own original work.
 */
 #include <avr/io.h>
 #include <stdio.h>
 #ifdef _SIMULATE_
 #include "simAVRHeader.h"
 #include "../header/io.h"
+#include <avr/eeprom.h> 
 #include <util/delay.h>
 
 //======== Shared Variables ========
@@ -87,15 +85,9 @@ int main() {
     DDRC = 0xFF; 
     PORTC = 0x00; 
 
-    unsigned int a;
-
-
-
-
     max7219_init(); //init LED Display
     //initialize lcd
     LCD_init();
-
 
     //Setting period
     TimerSet(200);
@@ -104,6 +96,12 @@ int main() {
     //Defining our tasks 
     task *tasks[] = {&DisplayTask,&GameLogicTask,&DisplayScoreTask};
     const uint8_t tasksSize = sizeof(tasks)/sizeof(tasks[0]);
+
+
+    if (eeprom_read_byte((const char*) 1) != 0xFF) {
+        highScore = eeprom_read_byte((const char*) 1);
+    }
+
 
     //The LED Display Initializing
     DisplayTask.state = Display_Start;
@@ -122,6 +120,7 @@ int main() {
     DisplayScoreTask.period = 200;
     DisplayScoreTask.elapsedTime = 200;
     DisplayScoreTask.TickFct = &DisplayScoreSM;
+
 
 
 
