@@ -77,7 +77,7 @@ void countdown(){
     {
         case 6:
             countdownComplete = 0;
-            if(ticks > 5){
+            if(ticks > 8){
                 countdownFrom--;
                 ticks = 0;
             }else{
@@ -85,7 +85,7 @@ void countdown(){
             }
             break;
         case 5:
-            if(ticks > 5){
+            if(ticks > 8){
             for (unsigned char j = 0; j < 8; j++) {
                 max7219_digit(0, j, five[j]); //first LCD at row , equal value at five[row]
             }
@@ -97,7 +97,7 @@ void countdown(){
 
             break;
         case 4:
-            if(ticks>5){
+            if(ticks>8){
             for (unsigned char j = 0; j < 8; j++) {
                 max7219_digit(0, j, four[j]); //first LCD at row , equal value at five[row]
             }
@@ -108,7 +108,7 @@ void countdown(){
             }
             break;
         case 3:
-            if(ticks > 5){
+            if(ticks > 8){
             for (unsigned char j = 0; j < 8; j++) {
                 max7219_digit(0, j, three[j]); //first LCD at row , equal value at five[row]
             }
@@ -120,7 +120,7 @@ void countdown(){
             break;
 
         case 2:
-            if(ticks > 5){
+            if(ticks > 8){
             for (unsigned char j = 0; j < 8; j++) {
                 max7219_digit(0, j, two[j]); //first LCD at row , equal value at five[row]
             }
@@ -132,7 +132,7 @@ void countdown(){
             break;
 
         case 1:
-            if(ticks > 5){
+            if(ticks > 8){
 
             for (unsigned char j = 0; j < 8; j++) {
                 max7219_digit(0, j, one[j]); //first LCD at row , equal value at five[row]
@@ -145,7 +145,7 @@ void countdown(){
             }
             break;
         case 0:
-            if(ticks > 5){
+            if(ticks > 8){
                 countdownComplete = 1;
             }else{
                 ticks++;
@@ -273,8 +273,11 @@ int DisplaySM(int DisplayState)
         case Display_WaitForNextGame:
             if(newHighScoreFlag != 0x00){
                 displayHappy();
+                DisplayState = Display_WaitForNextGame;
+
             }else{
                 displayFrown();
+                DisplayState = Display_WaitForNextGame;
             }
             break;
         default:

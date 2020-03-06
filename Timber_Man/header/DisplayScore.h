@@ -97,7 +97,7 @@ int DisplayScoreSM(int DisplayScore)
 				printScore(highScore,currentScore);
 				DisplayScore = Display_Scores;
 			}
-			if(GameOver ==1 ){
+			if(GameOver == 1  || StopClockZero == 1){
 				DisplayScore = DisplayScore_Menu;
 			}
 			break;

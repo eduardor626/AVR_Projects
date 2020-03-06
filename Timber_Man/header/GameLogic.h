@@ -36,6 +36,9 @@ void checkCollisions(){
 				GameOver = 1;
 				return;
 			}
+			if(StopClockZero == 1){
+				GameOver =1;
+			}
     }
 
 
@@ -62,11 +65,12 @@ int GameLogicSM(int GameLogicState){
 			break;
 		case GameLogic_WaitForPress:
 			move = 0;
-			if(readInput == 0x01 || readInput == 0x02){
+			if(readInput == 0x01 || readInput == 0x02 && GameOver != 1){
 				rightMove = (readInput & 0x01);
 				leftMove = (readInput & 0x02);
 				GameLogicState = GameLogic_Wait;
-			}else{
+			}
+			else{
 				GameLogicState = GameLogic_WaitForPress;
 
 			}
@@ -85,6 +89,7 @@ int GameLogicSM(int GameLogicState){
 			checkCollisions();
 			GameLogicState = GameLogic_WaitForPress;
 			break;
+
 		default: break;
 
 	}
