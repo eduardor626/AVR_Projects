@@ -33,6 +33,7 @@ void printResetMessage(){
 
 
 
+
 int DisplayStopClockSM (int StopClock){
 
 	unsigned char buttonPress = (~PINA & 0x03);
@@ -87,13 +88,6 @@ int DisplayStopClockSM (int StopClock){
 			fiveTicks++;
 			break;
 		case STOPCLOCK_RESET:
-				// if(waitForNextGame == 10 && StopClockZero == 1){
-				// 	printResetMessage();
-				// 	StopClock = STOPCLOCK_RESET;
-				// 	waitForNextGame = 0;
-				// }else{
-				// 	waitForNextGame++;
-				// }
 				StopClock = STOPCLOCK_RESET;
 			break;
 		default:break;

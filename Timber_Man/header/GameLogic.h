@@ -44,7 +44,7 @@ void checkCollisions(){
 
 }
 
-enum GameLogicStates {GameLogic_Start, GameLogic_Init, GameLogic_WaitForPress, GameLogic_Wait, GameLogic_ShiftCheck} GameLogicState;
+enum GameLogicStates {GameLogic_Start, GameLogic_Init, GameLogic_WaitForPress, GameLogic_Wait, GameLogic_ShiftCheck, GameLogic_Stop} GameLogicState;
 
 
 int GameLogicSM(int GameLogicState){
@@ -87,9 +87,15 @@ int GameLogicSM(int GameLogicState){
 			checkCollisions();
 			shiftDown();
 			checkCollisions();
-			GameLogicState = GameLogic_WaitForPress;
-			break;
+			if(GameOver == 1 || StopClockZero == 1){
+				GameLogicState = GameLogic_Stop;
+			}else{
+				GameLogicState = GameLogic_WaitForPress;
 
+			}
+			break;
+		case GameLogic_Stop:
+			GameLogicState = GameLogic_Stop;
 		default: break;
 
 	}

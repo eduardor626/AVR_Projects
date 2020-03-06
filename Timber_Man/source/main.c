@@ -45,7 +45,6 @@ branch branch6;
 branch branch7;
 branch branch8;
     
-unsigned int a;
 
 //GameLogic Variables
 unsigned char GameOver;
@@ -80,6 +79,7 @@ task DisplayTask, GameLogicTask, DisplayScoreTask, DisplayStopClockTask;
 int main() {
 
     //Initializing PORTS for Input/Output
+    
 
     //PORTA for Button Inputs
     DDRA = 0x00;

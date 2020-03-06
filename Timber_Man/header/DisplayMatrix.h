@@ -260,7 +260,7 @@ int DisplaySM(int DisplayState)
             }
             break;
         case Display_Print:
-            if(GameOver == 1){
+            if(GameOver == 1 || StopClockZero == 1){
                 max7219_clearDisplay(1);
                 max7219_clearDisplay(0);
                 DisplayState = Display_WaitForNextGame;
