@@ -23,7 +23,23 @@ void printNokia(){
     nokia_lcd_render();
 }
 
+void printPressStart(){
 
+	unsigned char buffer[30];
+	nokia_lcd_clear();
+	nokia_lcd_set_cursor(0,0);
+    nokia_lcd_write_string("    Try Again?  ",1);
+    nokia_lcd_set_cursor(3,2);
+    nokia_lcd_write_string("     press:",1);
+    nokia_lcd_set_cursor(6,2);
+    nokia_lcd_write_string("START",2);
+
+    //sprintf(buffer, " %d", speedLeft);
+    //nokia_lcd_set_cursor(13, 15);
+    //nokia_lcd_write_string(buffer, 4);
+    nokia_lcd_render();
+
+}
 
 
 int DisplayStopClockSM (int StopClock){
@@ -90,6 +106,7 @@ int DisplayStopClockSM (int StopClock){
 					speedLeft = 10;
 					StopClock = STOPCLOCK_INIT;
 				}else{
+					printPressStart();
 					StopClock = STOPCLOCK_RESET;
 
 				}

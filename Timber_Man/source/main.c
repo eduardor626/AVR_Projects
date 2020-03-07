@@ -54,15 +54,16 @@ unsigned char timbermanSide;
 //Game Variables
 unsigned char Reset;
 unsigned char Start;
+
 unsigned char leftMove;
 unsigned char rightMove;
 
 //Score Variables
 unsigned char newHighScoreFlag = 0x00;
+unsigned char Select = 0;
 
 //StopClockVariables
 unsigned char StopClockZero = 0x00;
-
 
 //headers for game
 #include "nokia5110.h"
@@ -106,8 +107,6 @@ int main() {
     //Setting period
     TimerSet(100);
     TimerOn();
-
-    unsigned int a;
 
     //Defining our tasks 
     task *tasks[] = {&DisplayTask,&GameLogicTask,&DisplayScoreTask, &DisplayStopClockTask, &GameTask};
