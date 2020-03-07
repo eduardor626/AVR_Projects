@@ -24,14 +24,6 @@ void printNokia(){
 }
 
 
-void printResetMessage(){
-	nokia_lcd_clear();
-    nokia_lcd_set_cursor(3, 2);
-    nokia_lcd_write_string("PRESS RESTART TO TRY AGAIN", 3);
-    nokia_lcd_render();
-}
-
-
 
 
 int DisplayStopClockSM (int StopClock){
@@ -46,7 +38,7 @@ int DisplayStopClockSM (int StopClock){
 			break;
 		case STOPCLOCK_INIT:
 			//declare our variables 
-			if(countdownFrom == 1 && !GameOver){
+			if(countdownFrom == 5 && !GameOver){
 				StopClock = STOPCLOCK_WAIT;
 				speedLeft = 10;
 				fiveTicks = 0;
@@ -60,6 +52,8 @@ int DisplayStopClockSM (int StopClock){
 			}
 			else if(buttonPress == 0x01 || buttonPress ==0x02){
 				StopClock = STOPCLOCK_WAIT;
+			}else if(GameOver == 1){
+				StopClock = STOPCLOCK_RESET;
 			}
 			else{
 				StopClock = STOPCLOCK_WAIT;
@@ -81,6 +75,9 @@ int DisplayStopClockSM (int StopClock){
 				StopClock = STOPCLOCK_RESET;
 				StopClockZero = 1;
 				fiveTicks = 0;
+			}else if(GameOver == 1 || StopClockZero == 1){
+				StopClock = STOPCLOCK_RESET;
+
 			}else{
 				StopClock = STOPCLOCK_WAIT;
 				fiveTicks = 0;
@@ -88,7 +85,14 @@ int DisplayStopClockSM (int StopClock){
 			fiveTicks++;
 			break;
 		case STOPCLOCK_RESET:
-				StopClock = STOPCLOCK_RESET;
+				if(Start == 1 || Reset == 1){
+					StopClockZero = 0;
+					speedLeft = 10;
+					StopClock = STOPCLOCK_INIT;
+				}else{
+					StopClock = STOPCLOCK_RESET;
+
+				}
 			break;
 		default:break;
 	}

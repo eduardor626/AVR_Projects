@@ -38,6 +38,7 @@ void checkCollisions(){
 			}
 			if(StopClockZero == 1){
 				GameOver =1;
+				return;
 			}
     }
 
@@ -58,10 +59,18 @@ int GameLogicSM(int GameLogicState){
 			GameLogicState = GameLogic_Init;
 			break;
 		case GameLogic_Init:
-			GameLogicState = GameLogic_WaitForPress;
-			GameOver = 0;
-			collision = 0;
-			timbermanSide = 'L';
+			if(Start == 1 || Reset == 1){
+				GameOver = 0;
+				collision = 0;
+				timberMan = 0x40;
+				timbermanSide = 'L';
+				GameLogicState = GameLogic_WaitForPress;
+
+			}else{
+				GameLogicState = GameLogic_Init;
+
+			}
+
 			break;
 		case GameLogic_WaitForPress:
 			move = 0;
@@ -95,7 +104,13 @@ int GameLogicSM(int GameLogicState){
 			}
 			break;
 		case GameLogic_Stop:
-			GameLogicState = GameLogic_Stop;
+			if(Start == 1 || Reset == 1){
+				GameOver = 0;
+				GameLogicState = GameLogic_Init;
+			}else{
+				GameLogicState = GameLogic_Stop;
+
+			}
 		default: break;
 
 	}

@@ -71,24 +71,29 @@ int DisplayScoreSM(int DisplayScore)
 			DisplayScore = DisplayScore_Init;
 			break;
 		case DisplayScore_Init:
-			if(countdownFrom == 3){
+			if(countdownFrom == 4){
 				readValue();
 				if(highScore == 0){
 					eeprom_update_byte((const char *) 1, highScore);
 					highScore = 0;
 				}
+				currentScore = 0;
 				DisplayScore = Display_Scores;
 				printScore(highScore,currentScore);
 				break;
             }else{
             	DisplayScore = DisplayScore_Init;
+            	currentScore = 0;
             }
 			break;
 		case Display_Scores:
 			if(readMe == 0x01 || readMe == 0x02){
 				updateScore();
 				DisplayScore = DisplayScore_Wait;
-			}else{
+			}else if(GameOver == 1 || StopClockZero == 1){
+				DisplayScore = DisplayScore_Menu;
+			}
+			else{
 				DisplayScore = Display_Scores;
 			}
 			break;
@@ -102,10 +107,13 @@ int DisplayScoreSM(int DisplayScore)
 			}
 			break;
 		case DisplayScore_Menu:
-			if(readMe == 0x03){
-				printScore(highScore,currentScore);
+			if(Start == 1 || Reset == 1){
+				DisplayScore = DisplayScore_Start;
+				currentScore = 0;
+			}else{
+				DisplayScore = DisplayScore_Menu;
+
 			}
-			DisplayScore = DisplayScore_Menu;
 		default:break;
 	}
     return DisplayScore;

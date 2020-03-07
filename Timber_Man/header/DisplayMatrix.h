@@ -55,6 +55,8 @@ void initBranches(){
     branch7.value = leftBranch;
     branch7.whichIC = 1;
 
+    timberMan = 0x40;
+
     branches[0] = branch1;
     branches[1] = branch2;
     branches[2] = branch3;
@@ -220,7 +222,7 @@ void displayHappy(){
 
 
 //DISPLAY BEGIN
-enum DisplayStates {Display_Start, Display_Countdown, Display_Print,Display_WaitForNextGame} DisplayState;
+enum DisplayStates {Display_Start, Display_Init, Display_Countdown, Display_Print,Display_WaitForNextGame} DisplayState;
 
 int DisplaySM(int DisplayState)
 {
@@ -229,9 +231,12 @@ int DisplaySM(int DisplayState)
     switch(DisplayState)
     {
         case Display_Start:
-            DisplayState = Display_Countdown;
+            DisplayState = Display_Init;
+            break;
+        case Display_Init:
             max7219_clearDisplay(0);
             max7219_clearDisplay(1);
+            DisplayState = Display_Init;
             break;
         case Display_Countdown:
             DisplayState = Display_Countdown;
@@ -243,7 +248,8 @@ int DisplaySM(int DisplayState)
             DisplayState = Display_WaitForNextGame;
             break;
         default:
-            DisplayState = Display_Countdown;
+            //DisplayState = Display_Countdown;
+            //DisplayState = Display_Init;
             break;
     }
 
@@ -251,6 +257,14 @@ int DisplaySM(int DisplayState)
     switch(DisplayState)
     {
         case Display_Start:
+            break;
+        case Display_Init:
+            if(Start == 1 || Reset == 1){
+                countdownComplete = 0;
+                DisplayState = Display_Countdown;
+            }else{
+                DisplayState = Display_Init;
+            }
             break;
         case Display_Countdown:
             countdown();
@@ -273,11 +287,24 @@ int DisplaySM(int DisplayState)
         case Display_WaitForNextGame:
             if(newHighScoreFlag != 0x00){
                 displayHappy();
-                DisplayState = Display_WaitForNextGame;
+                if(Start == 1 || Reset == 1){
+                    countdownFrom = 6;
+                    ticks = 0;
+                    DisplayState = Display_Start;
+                }else{
+                    DisplayState = Display_WaitForNextGame;
+                }
 
             }else{
                 displayFrown();
-                DisplayState = Display_WaitForNextGame;
+                if(Start == 1 || Reset == 1){
+                    countdownFrom = 6;
+                    ticks = 0;
+                    DisplayState = Display_Start;
+                }else{
+                    DisplayState = Display_WaitForNextGame;
+
+                }
             }
             break;
         default:

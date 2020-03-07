@@ -34,7 +34,6 @@ const unsigned char emptyBranch = (0x00| treeTrunk);
 unsigned char whichBranch[4] = {emptyBranch,leftBranch,rightBranch};
 
 
-
 branch branches[7];
 branch branch1;
 branch branch2;
@@ -64,6 +63,7 @@ unsigned char newHighScoreFlag = 0x00;
 //StopClockVariables
 unsigned char StopClockZero = 0x00;
 
+
 //headers for game
 #include "nokia5110.h"
 #include "../header/DisplayMatrix.h"
@@ -72,14 +72,16 @@ unsigned char StopClockZero = 0x00;
 #include "../header/GameLogic.h"
 #include "../header/DisplayScore.h"
 #include "../header/DisplayStopClock.h"
+#include "../header/Game.h"
 #endif
 
-task DisplayTask, GameLogicTask, DisplayScoreTask, DisplayStopClockTask;
+
+
+task DisplayTask, GameLogicTask, DisplayScoreTask, DisplayStopClockTask, GameTask;
 
 int main() {
 
     //Initializing PORTS for Input/Output
-    
 
     //PORTA for Button Inputs
     DDRA = 0x00;
@@ -93,23 +95,22 @@ int main() {
     DDRC = 0xFF; 
     PORTC = 0x00; 
 
+    //PORTB for NOKIA Screen
     DDRB = 0xFF;
     PORTB = 0x00;
 
     max7219_init(); //init LED Display
     LCD_init(); 	//init LCD 
-    nokia_lcd_init();
-
+    nokia_lcd_init(); //init Nokia Screen
 
     //Setting period
     TimerSet(100);
     TimerOn();
 
+    unsigned int a;
 
-
-    unsigned char a;
     //Defining our tasks 
-    task *tasks[] = {&DisplayTask,&GameLogicTask,&DisplayScoreTask, &DisplayStopClockTask};
+    task *tasks[] = {&DisplayTask,&GameLogicTask,&DisplayScoreTask, &DisplayStopClockTask, &GameTask};
     const uint8_t tasksSize = sizeof(tasks)/sizeof(tasks[0]);
 
 
@@ -137,6 +138,13 @@ int main() {
     DisplayStopClockTask.period = 100;
     DisplayStopClockTask.elapsedTime = 100;
     DisplayStopClockTask.TickFct = &DisplayStopClockSM;
+
+    //The Game Logic Initializing
+    GameTask.state = Game_Start;
+    GameTask.period = 100;
+    GameTask.elapsedTime = 100;
+    GameTask.TickFct = &GameStateSM;
+
 
 
     while(1)
