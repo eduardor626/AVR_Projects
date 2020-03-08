@@ -8,7 +8,8 @@
 *
 */
 
-enum DisplayScores {DisplayScore_Start, DisplayScore_Init, Display_Scores, DisplayScore_Wait,DisplayScore_Menu} DisplayScore;
+enum DisplayScores {DisplayScore_Start, DisplayScore_Init, Display_Scores, DisplayScore_Wait,
+					DisplayScore_Menu, DisplayScore_Choice} DisplayScore;
 
 unsigned char currentScore = 0x00;
 unsigned char highScore;
@@ -16,7 +17,7 @@ unsigned char highScore;
 //Function to update the score
 void updateScore(){
 
-	if(GameOver == 0 && countdownComplete == 1){
+	if(GameOver == 0 && StopClockZero == 0 && countdownComplete == 1){
 		currentScore++;
 	}
 	if(currentScore >= highScore){
@@ -24,10 +25,20 @@ void updateScore(){
 		newHighScoreFlag = 1;
 		eeprom_update_byte((const char*) 1,highScore);
 
+	}else{
+		newHighScoreFlag = 0;
 	}
 	return;
 }
 
+
+void deleteHighScore(){
+	if(deleteHighScoreFlag == 1){
+		highScore = 0;
+		eeprom_update_byte((const char*) 1,highScore);
+		deleteHighScoreFlag = 0;
+	}
+}
 
 void printScore(uint8_t hiScore, uint8_t currScore){
 
@@ -52,6 +63,17 @@ void printScore(uint8_t hiScore, uint8_t currScore){
 		LCD_DisplayThis(17,buff);
 }
 
+
+void deleteHighMenuNo(){
+	LCD_DisplayString(1,"Delete Hi Score?");
+	LCD_DisplayThis(17," Yes      >No");
+}
+
+void deleteHighMenu(){
+	LCD_DisplayString(1,"Delete Hi Score?");
+	LCD_DisplayThis(17,">Yes       No");
+}
+
 void readValue(){
 		if (eeprom_read_byte((const char*) 1) != 0xFF) {
 			highScore = eeprom_read_byte((const char*) 1);
@@ -63,7 +85,7 @@ void readValue(){
 
 int DisplayScoreSM(int DisplayScore)
 {	
-	unsigned char readMe = (~PINA & 0x03);
+	unsigned char readMe = (~PINA & 0x0F);
 
 	switch(DisplayScore)
 	{
@@ -71,7 +93,7 @@ int DisplayScoreSM(int DisplayScore)
 			DisplayScore = DisplayScore_Init;
 			break;
 		case DisplayScore_Init:
-			if(countdownFrom == 4){
+			if(countdownFrom == 5){
 				readValue();
 				if(highScore == 0){
 					eeprom_update_byte((const char *) 1, highScore);
@@ -110,10 +132,42 @@ int DisplayScoreSM(int DisplayScore)
 			if(Start == 1 || Reset == 1){
 				DisplayScore = DisplayScore_Start;
 				currentScore = 0;
-			}else{
-				DisplayScore = DisplayScore_Menu;
+			}else if(( GameOver == 1 || StopClockZero == 1) && readMe == 0x08){
+				deleteHighMenu();
+				deleteHighScoreFlag = 1;
+				DisplayScore = DisplayScore_Choice;
 
 			}
+			else{
+				DisplayScore = DisplayScore_Menu;
+			}
+			break;
+		case DisplayScore_Choice:
+			if(readMe == 0x01){
+				deleteHighMenuNo();
+				deleteHighScoreFlag = 0;
+				DisplayScore = DisplayScore_Choice;
+			}else if(readMe == 0x02){
+				deleteHighMenu();
+				deleteHighScoreFlag = 1;
+				DisplayScore = DisplayScore_Choice;
+			}else if(readMe == 0x08 && deleteHighScoreFlag == 1){
+				deleteHighScore();
+				currentScore = 0;
+				printScore(highScore,currentScore);
+				DisplayScore = DisplayScore_Menu;
+			}else if(readMe == 0x08 && deleteHighScoreFlag == 0){
+				printScore(highScore,currentScore);
+				DisplayScore = DisplayScore_Menu;
+			}else if(Start == 1 || Reset == 1){
+				currentScore = 0;
+				deleteHighScoreFlag = 0;
+				DisplayScore = DisplayScore_Start;
+
+			}else{
+				DisplayScore = DisplayScore_Choice;
+			}
+			break;
 		default:break;
 	}
     return DisplayScore;

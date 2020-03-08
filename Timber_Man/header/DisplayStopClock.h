@@ -23,20 +23,36 @@ void printNokia(){
     nokia_lcd_render();
 }
 
-void printPressStart(){
 
-	unsigned char buffer[30];
+void printInstructions(){
 	nokia_lcd_clear();
 	nokia_lcd_set_cursor(0,0);
-    nokia_lcd_write_string("    Try Again?  ",1);
-    nokia_lcd_set_cursor(3,2);
-    nokia_lcd_write_string("     press:",1);
-    nokia_lcd_set_cursor(6,2);
-    nokia_lcd_write_string("START",2);
+    nokia_lcd_write_string(" INSTRUCTIONS",1);
+    nokia_lcd_set_cursor(0,8);
+    nokia_lcd_write_string(" ------------",1);
+    nokia_lcd_set_cursor(1,16);
+    nokia_lcd_write_string("Start = Play",1);
+    nokia_lcd_set_cursor(1,24);
+    nokia_lcd_write_string("L = Left Move",1);
+    nokia_lcd_set_cursor(1,32);
+    nokia_lcd_write_string("R = Right Move",1);
+    nokia_lcd_set_cursor(1,40);
+    nokia_lcd_write_string("> = Select",1);
+    nokia_lcd_render();
 
-    //sprintf(buffer, " %d", speedLeft);
-    //nokia_lcd_set_cursor(13, 15);
-    //nokia_lcd_write_string(buffer, 4);
+
+}
+
+void printPressStart(){
+
+	nokia_lcd_clear();
+	nokia_lcd_set_cursor(0,2);
+    nokia_lcd_write_string("  Try Again?  ",1);
+    nokia_lcd_set_cursor(0,12);
+    nokia_lcd_write_string("    press: ",1);
+    nokia_lcd_set_cursor(3,25);
+    nokia_lcd_write_string(" START",2);
+
     nokia_lcd_render();
 
 }
@@ -54,11 +70,14 @@ int DisplayStopClockSM (int StopClock){
 			break;
 		case STOPCLOCK_INIT:
 			//declare our variables 
-			if(countdownFrom == 5 && !GameOver){
+			if(countdownFrom == 3 && !GameOver){
 				StopClock = STOPCLOCK_WAIT;
 				speedLeft = 10;
 				fiveTicks = 0;
 				printNokia();
+			}else{
+				printInstructions();
+				StopClock = STOPCLOCK_INIT;
 			}
 
 			break;

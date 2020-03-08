@@ -61,9 +61,11 @@ unsigned char rightMove;
 //Score Variables
 unsigned char newHighScoreFlag = 0x00;
 unsigned char Select = 0;
+unsigned char deleteHighScoreFlag = 0x00;
 
 //StopClockVariables
 unsigned char StopClockZero = 0x00;
+
 
 //headers for game
 #include "nokia5110.h"
@@ -108,10 +110,10 @@ int main() {
     TimerSet(100);
     TimerOn();
 
+
     //Defining our tasks 
     task *tasks[] = {&DisplayTask,&GameLogicTask,&DisplayScoreTask, &DisplayStopClockTask, &GameTask};
     const uint8_t tasksSize = sizeof(tasks)/sizeof(tasks[0]);
-
 
     //The LED Display Initializing
     DisplayTask.state = Display_Start;
@@ -144,8 +146,7 @@ int main() {
     GameTask.elapsedTime = 100;
     GameTask.TickFct = &GameStateSM;
 
-
-
+    unsigned char a;
     while(1)
     {
         for(uint8_t i = 0; i< tasksSize; ++i)
