@@ -74,7 +74,7 @@ int GameLogicSM(int GameLogicState){
 			break;
 		case GameLogic_WaitForPress:
 			move = 0;
-			if(readInput == 0x01 || readInput == 0x02 && GameOver != 1){
+			if(GameOver != 1 && (readInput == 0x01 || readInput == 0x02) ){
 				rightMove = (readInput & 0x01);
 				leftMove = (readInput & 0x02);
 				GameLogicState = GameLogic_Wait;

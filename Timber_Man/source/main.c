@@ -66,6 +66,9 @@ unsigned char deleteHighScoreFlag = 0x00;
 //StopClockVariables
 unsigned char StopClockZero = 0x00;
 
+//Speaker Variables 
+unsigned char SpeakerStopFlag = 0x00;
+
 
 //headers for game
 #include "nokia5110.h"
@@ -76,11 +79,11 @@ unsigned char StopClockZero = 0x00;
 #include "../header/DisplayScore.h"
 #include "../header/DisplayStopClock.h"
 #include "../header/Game.h"
+#include "../header/Speaker.h"
 #endif
 
 
-
-task DisplayTask, GameLogicTask, DisplayScoreTask, DisplayStopClockTask, GameTask;
+task DisplayTask, GameLogicTask, DisplayScoreTask, DisplayStopClockTask, GameTask, SpeakerTask;
 
 int main() {
 
@@ -105,48 +108,55 @@ int main() {
     max7219_init(); //init LED Display
     LCD_init(); 	//init LCD 
     nokia_lcd_init(); //init Nokia Screen
+    PWM_on(); //initialize speaker
+
 
     //Setting period
-    TimerSet(100);
+    TimerSet(50);
     TimerOn();
 
 
     //Defining our tasks 
-    task *tasks[] = {&DisplayTask,&GameLogicTask,&DisplayScoreTask, &DisplayStopClockTask, &GameTask};
+    task *tasks[] = {&DisplayTask,&GameLogicTask,&DisplayScoreTask, &DisplayStopClockTask, &GameTask, &SpeakerTask};
     const uint8_t tasksSize = sizeof(tasks)/sizeof(tasks[0]);
 
     //The LED Display Initializing
     DisplayTask.state = Display_Start;
-    DisplayTask.period = 100;
-    DisplayTask.elapsedTime = 100;
+    DisplayTask.period = 50;
+    DisplayTask.elapsedTime = 50;
     DisplayTask.TickFct = &DisplaySM;
 
     //The Game Logic Initializing
     GameLogicTask.state = GameLogic_Start;
-    GameLogicTask.period = 100;
-    GameLogicTask.elapsedTime = 100;
+    GameLogicTask.period = 50;
+    GameLogicTask.elapsedTime = 50;
     GameLogicTask.TickFct = &GameLogicSM;
 
     //The LCD Display Score Initializing
     DisplayScoreTask.state = DisplayScore_Start;
-    DisplayScoreTask.period = 100;
-    DisplayScoreTask.elapsedTime = 100;
+    DisplayScoreTask.period = 50;
+    DisplayScoreTask.elapsedTime = 50;
     DisplayScoreTask.TickFct = &DisplayScoreSM;
 
 
     //The NOKIA LCD Display StopClock Initializing
     DisplayStopClockTask.state = STOPCLOCK_START;
-    DisplayStopClockTask.period = 100;
-    DisplayStopClockTask.elapsedTime = 100;
+    DisplayStopClockTask.period = 50;
+    DisplayStopClockTask.elapsedTime = 50;
     DisplayStopClockTask.TickFct = &DisplayStopClockSM;
 
     //The Game Logic Initializing
     GameTask.state = Game_Start;
-    GameTask.period = 100;
-    GameTask.elapsedTime = 100;
+    GameTask.period = 50;
+    GameTask.elapsedTime = 50;
     GameTask.TickFct = &GameStateSM;
 
-    unsigned char a;
+    //The SpeakerInitializing
+    SpeakerTask.state = Speaker_Start;
+    SpeakerTask.period = 50;
+    SpeakerTask.elapsedTime = 50;
+    SpeakerTask.TickFct = &SpeakerStatesSM;
+
     while(1)
     {
         for(uint8_t i = 0; i< tasksSize; ++i)
