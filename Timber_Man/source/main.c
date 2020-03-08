@@ -115,6 +115,7 @@ int main() {
     TimerSet(50);
     TimerOn();
 
+    unsigned int a;
 
     //Defining our tasks 
     task *tasks[] = {&DisplayTask,&GameLogicTask,&DisplayScoreTask, &DisplayStopClockTask, &GameTask, &SpeakerTask};
@@ -170,7 +171,7 @@ int main() {
                 tasks[i]->elapsedTime = 0;
             }
             //update elasped time
-                tasks[i]->elapsedTime += 100;
+                tasks[i]->elapsedTime += 50;
         }
         while(!TimerFlag);
         TimerFlag = 0;

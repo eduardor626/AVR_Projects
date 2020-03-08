@@ -9,7 +9,8 @@
 */
 
 enum DisplayScores {DisplayScore_Start, DisplayScore_Init, Display_Scores, DisplayScore_Wait,
-					DisplayScore_Menu, DisplayScore_Choice} DisplayScore;
+					DisplayScore_Menu, DisplayScore_wait4Release, DisplayScore_Choice, DisplayScore_SelectPressed ,
+					DisplayScore_WaitRight, DisplayScore_CheckDeleteFlag, DisplayScore_WaitForSelect, DisplayScore_WaitForChoice} DisplayScore;
 
 unsigned char currentScore = 0x00;
 unsigned char highScore;
@@ -135,39 +136,105 @@ int DisplayScoreSM(int DisplayScore)
 			}else if(( GameOver == 1 || StopClockZero == 1) && readMe == 0x08){
 				deleteHighMenu();
 				deleteHighScoreFlag = 1;
-				DisplayScore = DisplayScore_Choice;
+				DisplayScore = DisplayScore_wait4Release;
 
 			}
 			else{
 				DisplayScore = DisplayScore_Menu;
 			}
 			break;
-		case DisplayScore_Choice:
-			if(readMe == 0x01){
-				deleteHighMenuNo();
-				deleteHighScoreFlag = 0;
+
+		case DisplayScore_wait4Release:
+			if(readMe == 0x00){
 				DisplayScore = DisplayScore_Choice;
+			}else if(readMe == 0x08){
+				DisplayScore = DisplayScore_wait4Release;
+			}
+			else{
+				DisplayScore = DisplayScore_wait4Release;
+			}
+			break;
+		case DisplayScore_Choice:
+			if(readMe == 0x08){
+				DisplayScore = DisplayScore_SelectPressed;
 			}else if(readMe == 0x02){
-				deleteHighMenu();
 				deleteHighScoreFlag = 1;
 				DisplayScore = DisplayScore_Choice;
-			}else if(readMe == 0x08 && deleteHighScoreFlag == 1){
-				deleteHighScore();
-				currentScore = 0;
-				printScore(highScore,currentScore);
-				DisplayScore = DisplayScore_Menu;
-			}else if(readMe == 0x08 && deleteHighScoreFlag == 0){
-				printScore(highScore,currentScore);
-				DisplayScore = DisplayScore_Menu;
-			}else if(Start == 1 || Reset == 1){
-				currentScore = 0;
+			}else if(readMe == 0x01){
+				DisplayScore = DisplayScore_WaitRight;
 				deleteHighScoreFlag = 0;
-				DisplayScore = DisplayScore_Start;
-
 			}else{
 				DisplayScore = DisplayScore_Choice;
 			}
 			break;
+		case DisplayScore_SelectPressed:
+			if(readMe == 0x08){
+				DisplayScore = DisplayScore_SelectPressed;
+			}else if(readMe == 0x00){
+				DisplayScore = DisplayScore_CheckDeleteFlag;
+			}else{
+				DisplayScore = DisplayScore_SelectPressed;
+			}
+			break;
+		case DisplayScore_WaitRight:
+			if(readMe == 0x01){
+				DisplayScore = DisplayScore_WaitRight;
+			}else if(readMe == 0x00){
+				deleteHighMenuNo();
+				DisplayScore = DisplayScore_WaitForSelect;
+			}else{
+				DisplayScore = DisplayScore_WaitRight;
+			}
+			break;
+		case DisplayScore_WaitForSelect:
+			if(readMe == 0x01){
+				DisplayScore = DisplayScore_WaitRight;
+			}else if(readMe == 0x02){
+				DisplayScore = DisplayScore_Choice;
+				deleteHighScoreFlag = 1;
+				deleteHighMenu();
+			}else if(readMe == 0x08){
+				DisplayScore = DisplayScore_SelectPressed;
+			}else{
+				DisplayScore = DisplayScore_WaitForSelect;
+			}
+			break;
+		case DisplayScore_CheckDeleteFlag:
+			if(deleteHighScoreFlag == 0){
+				currentScore = 0;
+				printScore(highScore, currentScore);
+				DisplayScore = DisplayScore_Menu;
+			}else if(deleteHighScoreFlag == 1){
+				deleteHighScore();
+				currentScore = 0;
+				printScore(highScore,currentScore);
+				DisplayScore = DisplayScore_Menu;
+			}else{
+				DisplayScore = DisplayScore_CheckDeleteFlag;
+			}
+			break;
+			// if(readMe == 0x01){
+			// 	deleteHighMenuNo();
+			// 	deleteHighScoreFlag = 0;
+			// 	DisplayScore = DisplayScore_WaitForChoice;
+			// }else if(readMe == 0x02){
+			// 	deleteHighMenu();
+			// 	deleteHighScoreFlag = 1;
+			// 	DisplayScore = DisplayScore_WaitForChoice;
+			// }else if(readMe == 0x08){
+			// 	//deleteHighMenu();
+			// 	deleteHighScore();
+			// 	currentScore = 0;
+			// 	printScore(highScore,currentScore);
+			// }else if(Start == 1 || Reset == 1){
+			// 	currentScore = 0;
+			// 	deleteHighScoreFlag = 0;
+			// 	DisplayScore = DisplayScore_Start;
+
+			// }else{
+			// 	DisplayScore = DisplayScore_Choice;
+			// }
+			//break;
 		default:break;
 	}
     return DisplayScore;
