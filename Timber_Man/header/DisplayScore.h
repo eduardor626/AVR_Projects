@@ -25,6 +25,7 @@ void updateScore(){
 		highScore = currentScore;
 		newHighScoreFlag = 1;
 		eeprom_update_byte((const char*) 1,highScore);
+		newHighScoreFlag = 0;
 
 	}else{
 		newHighScoreFlag = 0;
@@ -87,6 +88,12 @@ void readValue(){
 int DisplayScoreSM(int DisplayScore)
 {	
 	unsigned char readMe = (~PINA & 0x0F);
+	
+	//0x01 = RIGHT pressed
+	//0x02 = LEFT pressed
+	//0x04 = Start/Reset pressed
+	//0x08 = SELECT pressed
+
 
 	switch(DisplayScore)
 	{
@@ -213,28 +220,6 @@ int DisplayScoreSM(int DisplayScore)
 				DisplayScore = DisplayScore_CheckDeleteFlag;
 			}
 			break;
-			// if(readMe == 0x01){
-			// 	deleteHighMenuNo();
-			// 	deleteHighScoreFlag = 0;
-			// 	DisplayScore = DisplayScore_WaitForChoice;
-			// }else if(readMe == 0x02){
-			// 	deleteHighMenu();
-			// 	deleteHighScoreFlag = 1;
-			// 	DisplayScore = DisplayScore_WaitForChoice;
-			// }else if(readMe == 0x08){
-			// 	//deleteHighMenu();
-			// 	deleteHighScore();
-			// 	currentScore = 0;
-			// 	printScore(highScore,currentScore);
-			// }else if(Start == 1 || Reset == 1){
-			// 	currentScore = 0;
-			// 	deleteHighScoreFlag = 0;
-			// 	DisplayScore = DisplayScore_Start;
-
-			// }else{
-			// 	DisplayScore = DisplayScore_Choice;
-			// }
-			//break;
 		default:break;
 	}
     return DisplayScore;

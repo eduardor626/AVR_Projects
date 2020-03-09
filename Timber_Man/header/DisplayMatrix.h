@@ -13,8 +13,11 @@ unsigned char two[] = { 0x00, 0x3C, 0x66, 0x06, 0x0C, 0x30, 0x60, 0x7E };
 unsigned char one[] = { 0x00, 0x18, 0x18, 0x38, 0x18, 0x18, 0x18, 0x7E };
 unsigned char frown[] = { 0x3C, 0x42, 0xA5, 0x81, 0x99, 0xA5, 0x42, 0x3C};
 unsigned char smile[]= { 0x3C, 0x42, 0xA5, 0x81, 0xA5, 0x99, 0x42, 0x3C};
+
 //To verify that the countdown has finished
-unsigned char countdownComplete = 0;
+//unsigned char countdownComplete = 0;
+
+unsigned char i = 0;
 
 branch branches[7];
 
@@ -68,7 +71,7 @@ void initBranches(){
 }
 
 
-unsigned char countdownFrom = 6;
+//unsigned char countdownFrom = 6;
 unsigned char ticks = 0;
 
 
@@ -79,84 +82,41 @@ void countdown(){
     {
         case 6:
             countdownComplete = 0;
-            if(ticks > 8){
-                countdownFrom--;
-                ticks = 0;
-            }else{
-                ticks++;
-            }
             break;
         case 5:
-            if(ticks > 8){
+            max7219_clearDisplay(0);
             for (unsigned char j = 0; j < 8; j++) {
                 max7219_digit(0, j, five[j]); //first LCD at row , equal value at five[row]
             }
-            countdownFrom--;
-            ticks = 0;
-            }else{
-                ticks ++;
-            }
-
             break;
         case 4:
-            if(ticks>8){
+            max7219_clearDisplay(0);
             for (unsigned char j = 0; j < 8; j++) {
                 max7219_digit(0, j, four[j]); //first LCD at row , equal value at five[row]
             }
-            countdownFrom--;
-            ticks = 0;
-            }else{
-                ticks++;
-            }
             break;
         case 3:
-            if(ticks > 8){
+            max7219_clearDisplay(0);
             for (unsigned char j = 0; j < 8; j++) {
                 max7219_digit(0, j, three[j]); //first LCD at row , equal value at five[row]
             }
-            countdownFrom--;
-            ticks = 0;
-            }else{
-                ticks++;
-            }   
             break;
-
         case 2:
-            if(ticks > 8){
+            max7219_clearDisplay(0);
             for (unsigned char j = 0; j < 8; j++) {
-                max7219_digit(0, j, two[j]); //first LCD at row , equal value at five[row]
-            }
-            countdownFrom--;
-            ticks = 0;
-            }else{
-                ticks++;
+                max7219_digit(0, j, two[j]); 
             }
             break;
-
         case 1:
-            if(ticks > 8){
-
             for (unsigned char j = 0; j < 8; j++) {
-                max7219_digit(0, j, one[j]); //first LCD at row , equal value at five[row]
-            }
-            countdownFrom = 0;
-            ticks = 0;
-            }else{
-                ticks++;
-
+                max7219_digit(0, j, one[j]); 
             }
             break;
         case 0:
-            if(ticks > 8){
-                countdownComplete = 1;
-            }else{
-                ticks++;
-            }
+            countdownComplete = 1;
         default:
             break;
     }
-
-
 }
 
 
@@ -222,7 +182,7 @@ void displayHappy(){
 
 
 //DISPLAY BEGIN
-enum DisplayStates {Display_Start, Display_Init, Display_Countdown, Display_Print,Display_WaitForNextGame} DisplayState;
+enum DisplayStates {Display_Start, Display_Init, Display_Countdown, Display_CountdownWait, Display_Print,Display_WaitForNextGame} DisplayState;
 
 int DisplaySM(int DisplayState)
 {
@@ -248,8 +208,6 @@ int DisplaySM(int DisplayState)
             DisplayState = Display_WaitForNextGame;
             break;
         default:
-            //DisplayState = Display_Countdown;
-            //DisplayState = Display_Init;
             break;
     }
 
@@ -261,16 +219,31 @@ int DisplaySM(int DisplayState)
         case Display_Init:
             if(Start == 1 || Reset == 1){
                 countdownComplete = 0;
+                i = 0;
                 DisplayState = Display_Countdown;
             }else{
                 DisplayState = Display_Init;
             }
             break;
         case Display_Countdown:
-            countdown();
+            if(countdownComplete != 1){
+                countdown();
+                DisplayState = Display_CountdownWait;
+            }
             if(countdownComplete == 1){
                 initializeMatrix();
                 DisplayState = Display_Print;
+            }
+            break;
+        case Display_CountdownWait:
+            if(i > 10){
+                countdownFrom--;
+                max7219_clearDisplay(0);
+                i = 0;
+                DisplayState = Display_Countdown;
+            }else{
+                i++;
+                DisplayState = Display_CountdownWait;
             }
             break;
         case Display_Print:

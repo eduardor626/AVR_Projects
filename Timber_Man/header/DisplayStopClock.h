@@ -70,7 +70,7 @@ int DisplayStopClockSM (int StopClock){
 			break;
 		case STOPCLOCK_INIT:
 			//declare our variables 
-			if(countdownFrom == 3 && !GameOver){
+			if(countdownFrom == 1 && !GameOver){
 				StopClock = STOPCLOCK_WAIT;
 				speedLeft = 10;
 				fiveTicks = 0;

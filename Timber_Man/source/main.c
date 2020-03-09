@@ -33,7 +33,6 @@ const unsigned char emptyBranch = (0x00| treeTrunk);
 //Array of Branches to choose from
 unsigned char whichBranch[4] = {emptyBranch,leftBranch,rightBranch};
 
-
 branch branches[7];
 branch branch1;
 branch branch2;
@@ -44,6 +43,9 @@ branch branch6;
 branch branch7;
 branch branch8;
     
+//Matrix Variables
+unsigned char countdownFrom = 6;
+unsigned char countdownComplete = 0;
 
 //GameLogic Variables
 unsigned char GameOver;
@@ -83,6 +85,7 @@ unsigned char SpeakerStopFlag = 0x00;
 #endif
 
 
+
 task DisplayTask, GameLogicTask, DisplayScoreTask, DisplayStopClockTask, GameTask, SpeakerTask;
 
 int main() {
@@ -115,11 +118,11 @@ int main() {
     TimerSet(50);
     TimerOn();
 
-    unsigned int a;
 
     //Defining our tasks 
     task *tasks[] = {&DisplayTask,&GameLogicTask,&DisplayScoreTask, &DisplayStopClockTask, &GameTask, &SpeakerTask};
     const uint8_t tasksSize = sizeof(tasks)/sizeof(tasks[0]);
+
 
     //The LED Display Initializing
     DisplayTask.state = Display_Start;
@@ -154,8 +157,8 @@ int main() {
 
     //The SpeakerInitializing
     SpeakerTask.state = Speaker_Start;
-    SpeakerTask.period = 50;
-    SpeakerTask.elapsedTime = 50;
+    SpeakerTask.period = 100;
+    SpeakerTask.elapsedTime = 100;
     SpeakerTask.TickFct = &SpeakerStatesSM;
 
     while(1)
