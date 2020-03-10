@@ -1,7 +1,8 @@
 /*	
     Author: Eduardo Rocha
-*	Assignment: Final Project Timber Man
+*	Assignment: Final Project - Timber Man
 *	Exercise Description: 
+    
         This is the main.c (driver) of my Timber Man Variation game.
 *
 */
@@ -83,7 +84,6 @@ unsigned char SpeakerStopFlag = 0x00;
 #include "../header/Game.h"
 #include "../header/Speaker.h"
 #endif
-
 
 
 task DisplayTask, GameLogicTask, DisplayScoreTask, DisplayStopClockTask, GameTask, SpeakerTask;

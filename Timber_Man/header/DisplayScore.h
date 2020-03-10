@@ -25,7 +25,6 @@ void updateScore(){
 		highScore = currentScore;
 		newHighScoreFlag = 1;
 		eeprom_update_byte((const char*) 1,highScore);
-		newHighScoreFlag = 0;
 
 	}else{
 		newHighScoreFlag = 0;
