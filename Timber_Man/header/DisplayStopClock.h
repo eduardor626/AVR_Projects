@@ -12,6 +12,7 @@ unsigned char fiveTicks = 0x00;
 unsigned char waitForNextGame = 0x00;
 
 
+//Printing Timer Countdown
 void printNokia(){
 	unsigned char buffer[5] = {};
 	nokia_lcd_clear();

@@ -14,10 +14,10 @@ unsigned char one[] = { 0x00, 0x18, 0x18, 0x38, 0x18, 0x18, 0x18, 0x7E };
 unsigned char frown[] = { 0x3C, 0x42, 0xA5, 0x81, 0x99, 0xA5, 0x42, 0x3C};
 unsigned char smile[]= { 0x3C, 0x42, 0xA5, 0x81, 0xA5, 0x99, 0x42, 0x3C};
 
-//To verify that the countdown has finished
-//unsigned char countdownComplete = 0;
 
 unsigned char i = 0;
+unsigned char ticks = 0;
+
 
 branch branches[7];
 
@@ -70,11 +70,6 @@ void initBranches(){
 
 }
 
-
-//unsigned char countdownFrom = 6;
-unsigned char ticks = 0;
-
-
 //Function that will display a countdown on the LED Matrix 5,4,3,2,1 etc.
 void countdown(){
 
@@ -92,13 +87,13 @@ void countdown(){
         case 4:
             max7219_clearDisplay(0);
             for (unsigned char j = 0; j < 8; j++) {
-                max7219_digit(0, j, four[j]); //first LCD at row , equal value at five[row]
+                max7219_digit(0, j, four[j]); 
             }
             break;
         case 3:
             max7219_clearDisplay(0);
             for (unsigned char j = 0; j < 8; j++) {
-                max7219_digit(0, j, three[j]); //first LCD at row , equal value at five[row]
+                max7219_digit(0, j, three[j]); 
             }
             break;
         case 2:
@@ -154,6 +149,7 @@ void displayMatrix(){
         max7219_digit(0, j,treeTrunk); 
         max7219_digit(1,j,treeTrunk);
     }
+
     //creating the branches
     for(unsigned char j =0; j<7; j++){
         if(branches[j].row > 7){
@@ -170,13 +166,13 @@ void displayMatrix(){
 
 void displayFrown(){
     for (unsigned char j = 0; j < 8; j++) {
-        max7219_digit(0, j, frown[j]); //first LCD at row , equal value at five[row]
+        max7219_digit(0, j, frown[j]); 
     }
 }
 
 void displayHappy(){
     for (unsigned char j = 0; j < 8; j++) {
-        max7219_digit(0, j, smile[j]); //first LCD at row , equal value at five[row]
+        max7219_digit(0, j, smile[j]); 
     }
 }
 

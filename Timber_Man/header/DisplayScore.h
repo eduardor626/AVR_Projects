@@ -1,21 +1,15 @@
 #ifndef _DISPLAY_SCORE_H_
 #define _DISPLAY_SCORE_H_
 
-/**
-*
-*	This header file takes care of the displaying of scores on the LCD Display.
-*  
-*
-*/
 
 enum DisplayScores {DisplayScore_Start, DisplayScore_Init, Display_Scores, DisplayScore_Wait,
 					DisplayScore_Menu, DisplayScore_wait4Release, DisplayScore_Choice, DisplayScore_SelectPressed ,
-					DisplayScore_WaitRight, DisplayScore_CheckDeleteFlag, DisplayScore_WaitForSelect, DisplayScore_WaitForChoice} DisplayScore;
+					DisplayScore_WaitRight, DisplayScore_CheckDeleteFlag, DisplayScore_WaitForSelect, 
+					DisplayScore_WaitForChoice} DisplayScore;
 
 unsigned char currentScore = 0x00;
 unsigned char highScore;
 
-//Function to update the score
 void updateScore(){
 
 	if(GameOver == 0 && StopClockZero == 0 && countdownComplete == 1){
@@ -86,12 +80,13 @@ void readValue(){
 
 int DisplayScoreSM(int DisplayScore)
 {	
-	unsigned char readMe = (~PINA & 0x0F);
-	
+
+	//readMe:
 	//0x01 = RIGHT pressed
 	//0x02 = LEFT pressed
 	//0x04 = Start/Reset pressed
 	//0x08 = SELECT pressed
+	unsigned char readMe = (~PINA & 0x0F);
 
 
 	switch(DisplayScore)

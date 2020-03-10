@@ -2,8 +2,19 @@
     Author: Eduardo Rocha
 *	Assignment: Final Project - Timber Man
 *	Exercise Description: 
-    
-        This is the main.c (driver) of my Timber Man Variation game.
+        
+        Timber Man is a game where you play as a Lumber Jack chopping down wood. 
+        You are able to chop a piece of a huge tree trunk by either pressing the 
+        Right or Left buttons. At each chop , the tree trunk gets cut bringing down
+        branches with it. 
+
+        The task? 
+        To cut as many pieces of the trunk without colliding with branches. You must
+        do this within a 250ms time interval within each button press. Failure to 
+        do so will result in a stop clock timer being decremented. Once the stop clock
+        reaches 0, the game is ended. If Timber Man collides with a branch, he dies. 
+
+        Try to get a high score of chops! Good Luck! 
 *
 */
 #include <avr/io.h>
@@ -155,7 +166,7 @@ int main() {
     GameTask.elapsedTime = 50;
     GameTask.TickFct = &GameStateSM;
 
-    //The SpeakerInitializing
+    //The Speaker Initializing
     SpeakerTask.state = Speaker_Start;
     SpeakerTask.period = 100;
     SpeakerTask.elapsedTime = 100;

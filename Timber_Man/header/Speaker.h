@@ -4,17 +4,11 @@
 #include "pwm.h"
 
 enum SpeakerStates {Speaker_Start, Speaker_Init, Speaker_Wait, Speaker_Sound, Speaker_WaitForNextGame} SpeakerState;
+
 unsigned char counter = 0;
 unsigned char countdownCounter = 0;
 unsigned char fiveFlag = 0, fourFlag = 0 , threeFlag = 0 , twoFlag = 0 , oneFlag = 0;
 
-
-void speakerSequence(double value){
-	if(countdownCounter  == 0){
-		set_PWM(value);
-		countdownCounter++;
-	}
-}
 
 int SpeakerStatesSM(int SpeakerState){
 
