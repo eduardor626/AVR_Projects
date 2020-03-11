@@ -22,6 +22,7 @@
   - Button Inputs (Start, Left, Right, Select)
   - LCD Display (Score)
   - Nokia 5110 LCD Display Module (Stopclock)
+  - Piezo speaker buzzer
   - Cardboard box from Coffee Bean
 
 ![](images/Setup.JPG)}
@@ -31,5 +32,9 @@
   - Saving High Score onto EEPROM
   - Nokia screen
   - Matrices
+
+
+### Tech
+The programming language used is C.  Programming the Atmega microcontroller. 
 
 
