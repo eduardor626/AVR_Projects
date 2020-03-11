@@ -5,12 +5,31 @@
         Right or Left buttons. At each chop , the tree trunk gets cut bringing down
         branches with it. 
 
-The Task:
+		The Task:
 
-To cut as many pieces of the trunk without colliding with branches. You must
-do this within a maximum 250ms time interval within each button press (chop). Failure to 
-do so will result in a stop clock timer being decremented. The stopclock starts at 10
-but if it decrements to 0, the game is ended. If Timber Man collides with a branch, he dies.   
+		To cut as many pieces of the trunk without colliding with branches. You must
+		do this within a maximum 250ms time interval within each button press (chop). Failure to 
+		do so will result in a stop clock timer being decremented. The stopclock starts at 10
+		but if it decrements to 0, the game is ended. If Timber Man collides with a branch, he dies.   
 
 
-Try to get a chopping high score! Good Luck! 
+				Try to get a chopping high score! Good Luck! 
+
+
+
+# Parts Used
+  - 8x8 LED Matrix (2) MAX7219
+  - Button Inputs (Start, Left, Right, Select)
+  - LCD Display (Score)
+  - Nokia 5110 LCD Display Module (Stopclock)
+  - Cardboard box from Coffee Bean
+
+![](images/Setup.JPG)}
+
+# Complexities
+  - Game Logic
+  - Saving High Score onto EEPROM
+  - Nokia screen
+  - Matrices
+
+
