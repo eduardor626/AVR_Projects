@@ -26,7 +26,7 @@ Try to get a chopping high score! Good Luck!
   - Cardboard box from Coffee Bean
 
 //![](images/Setup.JPG width="400" height="790">)
-<img src="images/Setup.JPG" width="100" height="100">
+<img src="images/Setup.JPG" width="500" height="600">
 
 # Complexities
   - Game Logic
