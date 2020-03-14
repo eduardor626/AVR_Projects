@@ -23,14 +23,7 @@ Try to get a chopping high score! Good Luck!
   - Piezo speaker buzzer
   - Cardboard box from Coffee Bean
 
-<img src="images/Setup.JPG" width="500" height="600">
-
-# Complexities
-  - Game Logic
-  - Saving High Score onto EEPROM
-  - Nokia screen
-  - Matrices
-
+<img src="images/Setup.JPG" width="400" height="500">
 
 ### Tech
 The programming language used is C. Programming the ATmega1284 microcontroller using the AVR-toolchain.
@@ -38,6 +31,8 @@ The AVR® Toolchain is a collection of tools/libraries used to create applicatio
 
 
 # Link To Video Demo
+
+# Link To Wiring & Documentation
 
 
 
