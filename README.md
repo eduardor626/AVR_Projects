@@ -23,8 +23,7 @@ Try to get a chopping high score! Good Luck!
   - Piezo speaker buzzer
   - Cardboard box from Coffee Bean
 
-<img src="images/Setup.JPG" width="300" height="400">
-<img src="images/TurnedOn.JPG" width="300" height="400">
+<img src="images/Setup.JPG" width="300" height="400"> <img src="images/TurnedOn.JPG" width="300" height="400">
 
 
 ### Tech
