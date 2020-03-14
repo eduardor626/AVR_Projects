@@ -28,6 +28,9 @@ Try to get a chopping high score! Good Luck!
   <img src="images/TurnedOn.JPG" width="300" height="400"/> 
 </p>
 
+Off             |  On
+:-------------------------:|:-------------------------:
+<img src="images/Setup.JPG" width="300" height="400" >  | <img src="images/TurnedOn.JPG" width="300" height="400"> 
 
 ### Tech
 The programming language used is C. Programming the ATmega1284 microcontroller using the AVR-toolchain.
