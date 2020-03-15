@@ -35,7 +35,7 @@ The AVR® Toolchain is a collection of tools/libraries used to create applicatio
 # Links
 
 (1) Video Demonstration:
-
+<a href="https://www.youtube.com/watch?v=E55vy712cMo">Youtube Video</a>
 (2) Wiring & Documentation: 
-
+<a href="https://docs.google.com/document/d/17xzWEt5Au0ppzZXw-lrA1UG9Mo49ktF5PW19VYaI-cI/edit?usp=sharing">Docs</a>
 
